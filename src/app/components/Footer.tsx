@@ -1,6 +1,7 @@
 import { ArrowUp, Mail, Linkedin, Phone } from "lucide-react";
 import { motion } from "motion/react";
 import { navLinks, profile } from "../data/portfolio";
+import portfolioQr from "../../imports/QrCode/portfolio-qr.png";
 
 export function Footer() {
   return (
@@ -34,7 +35,7 @@ export function Footer() {
             </li>
           ))}
         </ul>
-        <div className="md:text-right">
+        <div className="flex flex-col items-center gap-4">
           <motion.a
             href="#home"
             className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm hover:bg-[var(--accent-brand)] hover:text-[var(--primary-foreground)] hover:border-transparent transition"
@@ -45,6 +46,23 @@ export function Footer() {
           >
             Back to top <ArrowUp className="w-4 h-4" />
           </motion.a>
+          <div className="flex flex-col items-center gap-1.5">
+            <img
+              src={portfolioQr}
+              alt="QR code linking to this portfolio"
+              className="rounded-lg"
+              style={{ width: 96, height: 96, background: "#fff", padding: 6 }}
+            />
+            <a
+              href="https://tanapasport.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs hover:text-[var(--accent-brand)] transition"
+              style={{ color: "var(--on-surface-muted)" }}
+            >
+              tanapasport.vercel.app
+            </a>
+          </div>
         </div>
       </div>
       <p

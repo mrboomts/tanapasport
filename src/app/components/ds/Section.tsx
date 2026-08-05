@@ -18,11 +18,16 @@ export function Section({ id, children, className = "" }: { id?: string; childre
   );
 }
 
-export function SectionHeading({ children }: { children: ReactNode }) {
+export function SectionHeading({ children, underline = true }: { children: ReactNode; underline?: boolean }) {
   return (
     <h2
-      className="font-display tracking-tight mb-12"
-      style={{ fontSize: "clamp(1.25rem, 2vw, 1.5rem)", lineHeight: 1.2, fontWeight: 700 }}
+      className={`font-display tracking-tight mb-12 ${underline ? "inline-block" : ""}`}
+      style={{
+        fontSize: "clamp(1.25rem, 2vw, 1.5rem)",
+        lineHeight: 1.2,
+        fontWeight: 700,
+        ...(underline ? { borderBottom: "3px solid var(--accent-brand)", paddingBottom: "0.3em" } : {}),
+      }}
     >
       {children}
     </h2>

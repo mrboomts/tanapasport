@@ -6,7 +6,7 @@ import { Section, SectionHeading } from "../ds/Section";
 export function Hobbies() {
   return (
     <Section id="hobbies">
-      <SectionHeading>Hobbies & Interests</SectionHeading>
+      <SectionHeading underline={false}>Hobbies & Interests</SectionHeading>
       <div className="grid sm:grid-cols-2 gap-6">
         {hobbies.map((h, i) => {
           const img = images.hobbies[h.name];

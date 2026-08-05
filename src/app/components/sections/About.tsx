@@ -80,8 +80,15 @@ export function About() {
   return (
     <Section id="about">
       <h2
-        className="font-display mb-12"
-        style={{ fontSize: "clamp(1.25rem, 2vw, 1.5rem)", lineHeight: 1.2, fontWeight: 700, color: "var(--foreground)" }}
+        className="font-display mb-12 inline-block"
+        style={{
+          fontSize: "clamp(1.25rem, 2vw, 1.5rem)",
+          lineHeight: 1.2,
+          fontWeight: 700,
+          color: "var(--foreground)",
+          borderBottom: "3px solid var(--accent-brand)",
+          paddingBottom: "0.3em",
+        }}
       >
         About me
       </h2>

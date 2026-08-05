@@ -135,8 +135,15 @@ export function Certifications() {
     <Section id="certifications">
       <div className="flex flex-col gap-3 mb-10">
         <h2
-          className="font-display"
-          style={{ fontSize: "clamp(1.25rem, 2vw, 1.5rem)", lineHeight: 1.2, fontWeight: 700, color: "var(--foreground)" }}
+          className="font-display inline-block self-start"
+          style={{
+            fontSize: "clamp(1.25rem, 2vw, 1.5rem)",
+            lineHeight: 1.2,
+            fontWeight: 700,
+            color: "var(--foreground)",
+            borderBottom: "3px solid var(--accent-brand)",
+            paddingBottom: "0.3em",
+          }}
         >
           Certifications
         </h2>
