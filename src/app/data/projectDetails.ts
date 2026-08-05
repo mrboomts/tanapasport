@@ -439,6 +439,11 @@ export const projectDetails: Record<string, ProjectDetail> = {
     actions: [
       { label: "Visit website", href: "https://log-pose.vitalsea.net/", variant: "primary" },
       {
+        label: "View Figma",
+        href: "https://www.figma.com/design/DVI8SZzg7AbTa2RuahFMY2/Logpose-CMS?t=srMvrYsBJBp7QiEX-0",
+        variant: "secondary",
+      },
+      {
         label: "Download on App store",
         href: "https://apps.apple.com/th/app/one-bangkok/id6475669593",
         variant: "appstore",
