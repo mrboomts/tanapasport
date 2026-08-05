@@ -7,7 +7,7 @@ export const profile = {
     "Welcome to my portfolio.\nThis portfolio shows my experience, projects, certifications, and information about me.\nI hope you understand me more and let's connect.",
   experienceIntro:
     "I changed my career field. At first, I worked in the banking sector as an Assistant Relationship Manager (Credit Analyst). I recognize the growth opportunities in this field and like it. I decided to start learning and eventually changed my career field to become a UX/UI Designer.",
-  resumeUrl: "https://drive.google.com/drive/folders/1HbdE9mAX-uCvyIaf3YL4P1UnBuAVFJN0",
+  resumeUrl: "https://drive.google.com/file/d/1VO2XaVt02cob08jPOEcDQC7AzR0Cz-eb/view",
   birthday: "Apr.30 1996",
   address: "Samutprakarn, Thailand",
   email: "tanapas.sup@gmail.com",
