@@ -60,25 +60,25 @@ export function Nav() {
         style={{ maxWidth: 1440, height: 88 }}
       >
         <div
-          className="flex items-stretch rounded-[10px] overflow-hidden"
+          className="flex items-stretch rounded-[10px] overflow-hidden shrink-0"
           style={{ background: "rgba(0,0,0,0.1)", height: 60 }}
         >
           <a
             href="#home"
-            className="flex items-center justify-center"
-            style={{ background: "rgba(0,0,0,0.1)", padding: "6px 14px" }}
+            className="flex items-center justify-center shrink-0"
+            style={{ background: "rgba(0,0,0,0.1)", padding: "6px clamp(8px, 3vw, 14px)" }}
           >
             <span
               className="font-display"
-              style={{ fontSize: 22, fontWeight: 700, color: "#fff", lineHeight: 1 }}
+              style={{ fontSize: "clamp(16px, 5vw, 22px)", fontWeight: 700, color: "#fff", lineHeight: 1 }}
             >
               {profile.nickname}
             </span>
           </a>
-          <div className="hidden sm:flex items-center" style={{ padding: "6px 14px" }}>
+          <div className="flex items-center min-w-0" style={{ padding: "6px clamp(6px, 2.5vw, 14px)" }}>
             <p
               className="font-display whitespace-nowrap"
-              style={{ fontSize: 15, lineHeight: 1.15, color: "#fff", fontWeight: 400 }}
+              style={{ fontSize: "clamp(10px, 3vw, 15px)", lineHeight: 1.15, color: "#fff", fontWeight: 400 }}
             >
               Tanapas
               <br />
