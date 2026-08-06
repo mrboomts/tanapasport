@@ -32,6 +32,7 @@ export function Button({
     <Comp
       href={href}
       onClick={onClick}
+      data-variant={variant}
       target={href?.startsWith("http") ? "_blank" : undefined}
       rel={href?.startsWith("http") ? "noopener noreferrer" : undefined}
       className={`inline-flex items-center justify-center gap-2 rounded-[10px] border px-5 py-2.5 font-display text-base whitespace-nowrap transition hover:brightness-110 ${

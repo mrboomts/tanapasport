@@ -112,6 +112,7 @@ function CertButton({ a }: { a: Action }) {
       href={a.href}
       target="_blank"
       rel="noopener noreferrer"
+      data-variant={a.filled ? "primary" : "secondary"}
       className="font-display flex-1 min-w-0 inline-flex items-center justify-center rounded-[8px] border px-2 py-1.5 whitespace-nowrap transition hover:brightness-110"
       style={{
         background: a.filled ? "#946e52" : "transparent",

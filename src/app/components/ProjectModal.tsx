@@ -136,6 +136,7 @@ export function ProjectModal({
         <div className="mt-16 flex justify-center">
           <motion.button
             onClick={onClose}
+            data-variant="close"
             className="font-display rounded-[10px] border px-8 py-2.5"
             style={{
               fontSize: "18px",

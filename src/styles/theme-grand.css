@@ -1,0 +1,223 @@
+/* ============================================================
+   GRAND THEME — "Midnight Atelier"
+   Midnight-indigo canvas, champagne gold, violet ambient glow.
+
+   Fully self-contained and removable: delete this file, its
+   @import in index.css, the Playfair import in fonts.css, and
+   drop "grand" from ThemeName in ThemeProvider.tsx.
+
+   Every rule is scoped under [data-theme="grand"] (set on <html>),
+   so it cannot affect the dark/light themes.
+
+   Several rules use !important because the components set the
+   corresponding properties as inline styles.
+   ============================================================ */
+
+[data-theme="grand"] {
+  --background: #0b0a16;
+  --foreground: #f3efe7;
+  --surface: rgba(255, 255, 255, 0.05);
+  --surface-2: rgba(255, 255, 255, 0.09);
+  --surface-elevated: #1b1832;
+  --on-surface-muted: #a49fbe;
+  --accent-brand: #e9c877;
+  --accent-brand-strong: #f7e2a8;
+  --tag-bg: transparent;
+  --tag-fg: #f3efe7;
+  --pill-outline: rgba(233, 200, 119, 0.45);
+  --card: rgba(255, 255, 255, 0.05);
+  --card-foreground: #f3efe7;
+  --border: rgba(233, 200, 119, 0.18);
+  --muted: rgba(255, 255, 255, 0.06);
+  --muted-foreground: #a49fbe;
+  --primary: #e9c877;
+  --primary-foreground: #0b0a16;
+
+  --font-display: "Playfair Display", "Kaisei Decol", serif;
+
+  --grand-gold: linear-gradient(135deg, #f7e2a8 0%, #e9c877 45%, #c9a253 100%);
+  --grand-hairline: rgba(233, 200, 119, 0.22);
+  --grand-lift: 0 22px 60px rgba(0, 0, 0, 0.55);
+}
+
+/* --- Ambient canvas ------------------------------------------------
+   App.tsx paints `background: var(--background)` inline on this
+   wrapper, which also resets background-image — hence !important. */
+[data-theme="grand"] .min-h-screen.w-full {
+  background-image:
+    radial-gradient(1200px 700px at 82% -12%, rgba(124, 92, 255, 0.26), transparent 60%),
+    radial-gradient(900px 560px at 4% 4%, rgba(233, 200, 119, 0.12), transparent 58%),
+    radial-gradient(1100px 820px at 50% 102%, rgba(124, 92, 255, 0.14), transparent 62%) !important;
+  background-repeat: no-repeat !important;
+  background-attachment: fixed, fixed, fixed !important;
+}
+
+/* --- Navigation: smoked glass with a gold hairline ----------------- */
+[data-theme="grand"] header.sticky {
+  background: rgba(11, 10, 22, 0.62) !important;
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border-bottom: 1px solid var(--grand-hairline);
+}
+
+/* Name plate (first child of the nav row) */
+[data-theme="grand"] header.sticky > div:first-child > div:first-child {
+  background: rgba(233, 200, 119, 0.08) !important;
+  border: 1px solid rgba(233, 200, 119, 0.25);
+}
+
+[data-theme="grand"] header.sticky > div:first-child > div:first-child > a {
+  background: rgba(233, 200, 119, 0.12) !important;
+}
+
+[data-theme="grand"] header.sticky > div:first-child > div:first-child > a span {
+  color: #f7e2a8 !important;
+}
+
+/* Expanding mobile menu panel */
+[data-theme="grand"] header.sticky > div:nth-child(2) {
+  background: rgba(11, 10, 22, 0.94) !important;
+  border-bottom: 1px solid var(--grand-hairline);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+[data-theme="grand"] header.sticky > div:nth-child(2) a {
+  color: #f3efe7 !important;
+}
+
+/* --- Display type: gold leaf --------------------------------------- */
+[data-theme="grand"] h1.font-display,
+[data-theme="grand"] h2.font-display {
+  background: var(--grand-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  letter-spacing: 0.01em;
+}
+
+[data-theme="grand"] h1.font-display {
+  filter: drop-shadow(0 6px 26px rgba(233, 200, 119, 0.28));
+  font-weight: 700;
+}
+
+/* Section rules read as a thin gilt underline.
+   Scoped to .inline-block: that is the class SectionHeading adds only
+   when underline is on, so the un-ruled headings stay un-ruled. */
+[data-theme="grand"] h2.font-display.inline-block {
+  border-bottom-width: 2px !important;
+  border-image: var(--grand-gold) 1 !important;
+}
+
+/* --- Project cards: dark glass plates ------------------------------
+   Projects.tsx hardcodes `bg-white` and dark inline text colours, so
+   the whole plate has to be re-tinted here. */
+[data-theme="grand"] button.group {
+  background: rgba(255, 255, 255, 0.045) !important;
+  border: 1px solid var(--grand-hairline);
+  box-shadow: var(--grand-lift);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+[data-theme="grand"] button.group:hover {
+  border-color: rgba(233, 200, 119, 0.55);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.62), 0 0 46px rgba(233, 200, 119, 0.16);
+}
+
+/* Opacities kept >= 0.68: at 11px these are small text, and anything
+   lower drops under 4.5:1 against the lit part of the backdrop. */
+[data-theme="grand"] button.group p:nth-of-type(1) {
+  color: rgba(243, 239, 231, 0.68) !important;
+  letter-spacing: 0.04em;
+}
+
+[data-theme="grand"] button.group p:nth-of-type(2) {
+  color: #f7e2a8 !important;
+}
+
+[data-theme="grand"] button.group p:nth-of-type(3) {
+  color: rgba(243, 239, 231, 0.68) !important;
+}
+
+[data-theme="grand"] button.group span.font-display {
+  background: var(--grand-gold) !important;
+  color: #0b0a16 !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em;
+}
+
+/* --- Buttons -------------------------------------------------------- */
+[data-theme="grand"] [data-variant="primary"] {
+  background: var(--grand-gold) !important;
+  color: #0b0a16 !important;
+  border-color: transparent !important;
+  font-weight: 600 !important;
+  box-shadow: 0 10px 30px rgba(233, 200, 119, 0.22) !important;
+}
+
+[data-theme="grand"] [data-variant="secondary"],
+[data-theme="grand"] [data-variant="ghost"] {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #f7e2a8 !important;
+  border-color: rgba(233, 200, 119, 0.45) !important;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-theme="grand"] [data-variant="close"] {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #f7e2a8 !important;
+  border-color: rgba(233, 200, 119, 0.45) !important;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Theme switch, hamburger, back-to-top */
+[data-theme="grand"] header button[aria-label^="Switch to"] {
+  border-color: rgba(233, 200, 119, 0.5) !important;
+  color: #f7e2a8 !important;
+  background: rgba(233, 200, 119, 0.06) !important;
+}
+
+[data-theme="grand"] footer a[href="#home"] {
+  border-color: rgba(233, 200, 119, 0.45) !important;
+  color: #f7e2a8 !important;
+}
+
+/* --- Panels: hobbies, empty states, footer -------------------------- */
+[data-theme="grand"] section .rounded-3xl {
+  border: 1px solid var(--grand-hairline);
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+[data-theme="grand"] section .rounded-3xl:hover {
+  border-color: rgba(233, 200, 119, 0.45);
+}
+
+[data-theme="grand"] footer {
+  border-top: 1px solid var(--grand-hairline) !important;
+  background: linear-gradient(180deg, transparent, rgba(124, 92, 255, 0.07));
+}
+
+/* --- Skill / language pills ----------------------------------------- */
+[data-theme="grand"] section span.rounded-full {
+  border-color: rgba(233, 200, 119, 0.28) !important;
+}
+
+/* --- Modal: theatre curtain ----------------------------------------- */
+[data-theme="grand"] .fixed.inset-0 {
+  background: rgba(11, 10, 22, 0.96) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* --- Fallbacks -------------------------------------------------------
+   iOS Safari renders background-attachment:fixed poorly (jank / no
+   repaint), and it is wasted work for reduced-motion users. The
+   gradient simply scrolls with the page instead. */
+@media (prefers-reduced-motion: reduce), (max-width: 820px) {
+  [data-theme="grand"] .min-h-screen.w-full {
+    background-attachment: scroll, scroll, scroll !important;
+  }
+}
