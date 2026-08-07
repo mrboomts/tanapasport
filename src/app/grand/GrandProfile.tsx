@@ -1,5 +1,6 @@
 import { hobbies, profile, skillGroups } from "../data/portfolio";
 import { images } from "../data/images";
+import { GrandCopyMail } from "./GrandCopyMail";
 
 export function GrandProfile() {
   const facts = [
@@ -49,11 +50,14 @@ export function GrandProfile() {
               </div>
             </dl>
 
-            <div className="g-contact">
-              <a href={`mailto:${profile.email}`} className="g-contact-line">
+            <div className="g-contact" id="g-contact">
+              <div className="g-contact-line g-contact-line--mail">
                 <span>Mail</span>
-                {profile.email}
-              </a>
+                <span className="g-contact-mailrow">
+                  <a href={`mailto:${profile.email}`}>{profile.email}</a>
+                  <GrandCopyMail email={profile.email} />
+                </span>
+              </div>
               <a href={`tel:${profile.phone}`} className="g-contact-line">
                 <span>Phone</span>
                 {profile.phone}

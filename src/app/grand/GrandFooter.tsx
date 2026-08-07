@@ -1,5 +1,6 @@
 import { ArrowUp } from "lucide-react";
 import { profile } from "../data/portfolio";
+import { GrandCopyMail } from "./GrandCopyMail";
 import portfolioQr from "../../imports/QrCode/portfolio-qr.png";
 
 export function GrandFooter() {
@@ -7,9 +8,12 @@ export function GrandFooter() {
     <footer className="g-footer">
       <p className="g-footer-kicker">Open to new work</p>
 
-      <a href={`mailto:${profile.email}`} className="g-footer-mail">
-        {profile.email}
-      </a>
+      <div className="g-footer-mailrow">
+        <a href={`mailto:${profile.email}`} className="g-footer-mail">
+          {profile.email}
+        </a>
+        <GrandCopyMail email={profile.email} className="g-copy--lg" />
+      </div>
 
       <div className="g-footer-grid">
         <div className="g-footer-col">
