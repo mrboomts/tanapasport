@@ -1,12 +1,17 @@
 import { motion } from "motion/react";
 import { hobbies } from "../../data/portfolio";
 import { images } from "../../data/images";
-import { Section, SectionHeading } from "../ds/Section";
 
+/** Sub-block of the About section — not a top-level section of its own. */
 export function Hobbies() {
   return (
-    <Section id="hobbies">
-      <SectionHeading underline={false}>Hobbies & Interests</SectionHeading>
+    <div className="mt-16">
+      <h3
+        className="font-display mb-8"
+        style={{ fontSize: "clamp(1.1rem, 1.8vw, 1.35rem)", fontWeight: 700, color: "var(--foreground)" }}
+      >
+        Hobbies &amp; Interests
+      </h3>
       <div className="grid sm:grid-cols-2 gap-6">
         {hobbies.map((h, i) => {
           const img = images.hobbies[h.name];
@@ -40,6 +45,6 @@ export function Hobbies() {
           );
         })}
       </div>
-    </Section>
+    </div>
   );
 }

@@ -2,6 +2,7 @@ import { profile } from "../../data/portfolio";
 import { Section } from "../ds/Section";
 import { images } from "../../data/images";
 import { HandPointRight } from "../icons/HandPointRight";
+import { Hobbies } from "./Hobbies";
 import flagPaths from "../../../imports/Frame15/svg-0bkrx7ub1q";
 
 const flagThai = (
@@ -190,6 +191,8 @@ export function About() {
           </div>
         </div>
       </div>
+
+      <Hobbies />
     </Section>
   );
 }

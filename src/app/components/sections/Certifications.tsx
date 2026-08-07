@@ -23,7 +23,7 @@ type CertRow = {
   images: { src: string; w: number; h: number; actions: Action[] }[];
 };
 
-const rows: CertRow[] = [
+export const certRows: CertRow[] = [
   {
     title: "Prompt Engineering for ChatGPT",
     issuer: "Vanderbilt University",
@@ -154,7 +154,7 @@ export function Certifications() {
       </div>
 
       <div className="flex flex-col gap-10">
-        {rows.map((r) => (
+        {certRows.map((r) => (
           <div key={r.title} className="flex flex-col lg:flex-row gap-[40px] items-start">
             <div className="flex flex-col gap-5 items-start justify-center lg:flex-1">
               <div className="flex flex-col gap-1">
