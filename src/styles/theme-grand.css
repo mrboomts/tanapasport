@@ -455,57 +455,7 @@
   cursor: grabbing;
 }
 
-.g-orb-stage {
-  position: absolute;
-  inset: 0;
-  transform-style: preserve-3d;
-  transform: rotateX(-16deg) rotateY(22deg);
-  will-change: transform;
-}
 
-.g-ring {
-  position: absolute;
-  inset: 6%;
-  border-radius: 50%;
-  border: 1px solid rgba(233, 200, 119, 0.55);
-  box-shadow: 0 0 26px rgba(233, 200, 119, 0.12), inset 0 0 26px rgba(233, 200, 119, 0.07);
-}
-
-.g-ring--a {
-  transform: rotateX(78deg);
-}
-.g-ring--b {
-  transform: rotateY(68deg);
-}
-.g-ring--c {
-  transform: rotateY(-26deg);
-  border-color: rgba(124, 92, 255, 0.5);
-}
-
-.g-cube {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 132px;
-  height: 132px;
-  margin: -66px 0 0 -66px;
-  transform-style: preserve-3d;
-  animation: g-cube-spin 22s linear infinite;
-}
-
-.g-face {
-  position: absolute;
-  inset: 0;
-  border: 1px solid rgba(247, 226, 168, 0.65);
-  background: linear-gradient(135deg, rgba(233, 200, 119, 0.14), rgba(124, 92, 255, 0.12));
-}
-
-.g-face--fr { transform: translateZ(66px); }
-.g-face--bk { transform: rotateY(180deg) translateZ(66px); }
-.g-face--rt { transform: rotateY(90deg) translateZ(66px); }
-.g-face--lf { transform: rotateY(-90deg) translateZ(66px); }
-.g-face--tp { transform: rotateX(90deg) translateZ(66px); }
-.g-face--bm { transform: rotateX(-90deg) translateZ(66px); }
 
 .g-orb-core {
   position: absolute;
@@ -540,17 +490,7 @@
   margin: 0;
 }
 
-@keyframes g-cube-spin {
-  to {
-    transform: rotateX(360deg) rotateY(360deg);
-  }
-}
 
-@media (prefers-reduced-motion: reduce) {
-  .g-cube {
-    animation: none;
-  }
-}
 
 .g-scrollcue {
   position: absolute;
@@ -1989,7 +1929,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
+  padding: 0.6rem 0.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(233, 200, 119, 0.3);
   color: var(--g-gold-lt);
   transition: transform 0.25s ease;
 }
@@ -2008,10 +1951,10 @@
 }
 
 .g-rail-cta-text {
-  writing-mode: vertical-rl;
-  font-size: 10px;
-  letter-spacing: 0.22em;
+  font-size: 9px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 /* ---------- Copy-to-clipboard ---------- */
@@ -2190,4 +2133,138 @@
   .g-proj-arrow {
     grid-column: 4;
   }
+}
+
+/* ============================================================
+   Platonic solid, aurora, scroll offset, prose
+   ============================================================ */
+
+/* Anchor targets need headroom so they do not land flush to the top edge */
+[data-theme="grand"] {
+  scroll-padding-top: 96px;
+}
+
+@media (min-width: 1100px) {
+  [data-theme="grand"] {
+    scroll-padding-top: clamp(4rem, 12vh, 9rem);
+  }
+}
+
+#g-contact {
+  scroll-margin-top: clamp(5rem, 16vh, 11rem);
+}
+
+/* ---------- SVG wireframe solid ---------- */
+.g-solid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 0 18px rgba(233, 200, 119, 0.22));
+}
+
+.g-artifact-shape {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--g-gold-lt);
+  margin-bottom: 0.35rem;
+}
+
+.g-artifact-hint {
+  text-align: center;
+}
+
+/* ---------- Aurora: page-wide, fixed behind all content ---------- */
+.g-aurora {
+  position: fixed;
+  inset: -15%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.82;
+  filter: blur(70px) saturate(165%);
+  background:
+    radial-gradient(30% 26% at 18% 16%, rgba(124, 92, 255, 0.75), transparent 68%),
+    radial-gradient(26% 24% at 72% 10%, rgba(64, 214, 190, 0.5), transparent 68%),
+    radial-gradient(28% 26% at 88% 42%, rgba(233, 120, 190, 0.5), transparent 68%),
+    radial-gradient(26% 24% at 34% 52%, rgba(233, 200, 119, 0.42), transparent 68%),
+    radial-gradient(30% 26% at 62% 78%, rgba(92, 148, 255, 0.5), transparent 68%),
+    radial-gradient(26% 24% at 12% 86%, rgba(168, 92, 255, 0.45), transparent 68%);
+  background-repeat: no-repeat;
+  animation: g-aurora-drift 32s ease-in-out infinite alternate;
+}
+
+/* content sits above the wash */
+.g-main {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes g-aurora-drift {
+  0% {
+    transform: translate3d(-2%, -1%, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(2%, 2%, 0) scale(1.12);
+  }
+  100% {
+    transform: translate3d(3%, -2%, 0) scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .g-aurora {
+    animation: none;
+  }
+}
+
+/* ---------- Ticker: expanded organisation names ---------- */
+.g-marquee-full {
+  font-family: var(--font-body);
+  font-style: normal;
+  font-size: 0.5em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--g-gold-dk);
+  margin-left: 0.55em;
+  align-self: center;
+}
+
+/* ---------- Mobile menu mail row ---------- */
+.g-menu-mailrow {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+/* ---------- Profile prose ---------- */
+.g-profile-bio p {
+  margin: 0;
+}
+
+.g-profile-bio p + p {
+  margin-top: 1.1em;
+  text-indent: 1.75em;
+}
+
+@media (max-width: 640px) {
+  .g-profile-bio p + p {
+    text-indent: 1.25em;
+  }
+}
+
+/* Dark veil over the aurora.
+   Measured: without it the brightest part of the wash drops muted text to
+   2.85:1. At 0.45 every token stays at or above 4.9:1 while the colour
+   still reads far more strongly than the old hero-only version. */
+.g-aurora-veil {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: rgba(10, 9, 18, 0.45);
 }

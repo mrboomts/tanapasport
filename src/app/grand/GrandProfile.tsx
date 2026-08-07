@@ -28,7 +28,11 @@ export function GrandProfile() {
           </div>
 
           <div className="g-profile-copy">
-            <p className="g-profile-bio">{profile.about}</p>
+            <div className="g-profile-bio">
+              {profile.about.split("\n\n").map((para) => (
+                <p key={para.slice(0, 24)}>{para}</p>
+              ))}
+            </div>
 
             <dl className="g-facts">
               {facts.map((f) => (

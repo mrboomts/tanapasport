@@ -131,8 +131,9 @@ export function GrandHero() {
             {[0, 1].map((copy) => (
               <div className="g-marquee-group" key={copy}>
                 {organisations.map((o) => (
-                  <span className="g-marquee-item" key={`${copy}-${o}`}>
-                    {o}
+                  <span className="g-marquee-item" key={`${copy}-${o.name}`}>
+                    {o.name}
+                    {o.full ? <em className="g-marquee-full">({o.full})</em> : null}
                     <i className="g-marquee-dot" />
                   </span>
                 ))}
@@ -140,7 +141,7 @@ export function GrandHero() {
             ))}
           </div>
         </div>
-        <p className="sr-only">{organisations.join(", ")}</p>
+        <p className="sr-only">{organisations.map((o) => (o.full ? `${o.name} (${o.full})` : o.name)).join(", ")}</p>
       </div>
 
       {/* Figures */}

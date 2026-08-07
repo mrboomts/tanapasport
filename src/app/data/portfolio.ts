@@ -8,7 +8,7 @@ export const profile = {
   experienceIntro:
     "I changed my career field. At first, I worked in the banking sector as an Assistant Relationship Manager (Credit Analyst). I recognize the growth opportunities in this field and like it. I decided to start learning and eventually changed my career field to become a UX/UI Designer.",
   resumeUrl: "https://drive.google.com/file/d/1VO2XaVt02cob08jPOEcDQC7AzR0Cz-eb/view",
-  birthday: "Apr.30 1996",
+  birthday: "16 Feb 1991",
   address: "Samutprakarn, Thailand",
   email: "tanapas.sup@gmail.com",
   phone: "065-857-1555",
@@ -22,7 +22,7 @@ export const profile = {
     { name: "Japanese", level: "Beginner" },
   ],
   about:
-    "I'm Tanapas Suppamongkol, known as Boom. I graduated from Kasetsart University with a major in Operations Management from the Faculty of Business Administration. After graduation, I worked for approximately 5 years in the banking sector, serving as a Relationship Officer and Assistant Relationship Manager (Credit Analyst). In today's world, where smartphones have integrated into our daily lives, I continually find myself questioning the design of applications and websites. As time progressed, I discovered the career field of \"UX/UI Design\" and recognized the growth opportunities within it, then I decided on a learning journey, ultimately leading to a successful career transition from banker to UX/UI Designer.",
+    "I'm Tanapas Suppamongkol, known as Boom. I graduated from Kasetsart University with a major in Operations Management from the Faculty of Business Administration. After graduation, I worked for approximately 5 years in the banking sector, serving as a Relationship Officer and Assistant Relationship Manager (Credit Analyst).\n\nIn today's world, where smartphones have integrated into our daily lives, I continually find myself questioning the design of applications and websites. As time progressed, I discovered the career field of \"UX/UI Design\" and recognized the growth opportunities within it, then I decided on a learning journey, ultimately leading to a successful career transition from banker to UX/UI Designer.",
   skills: [
     "AI","Claude","Vercel","Supabase","Git","Midjourney","Suno","ChatGPT","Gemini","Grok",
     "Figma","Adobe XD","Adobe Illustrator","Adobe Photoshop",
@@ -59,19 +59,19 @@ export const skillGroups = [
 
 /** Organisations the products I designed were delivered for — used by the
  *  ticker band. Ordered roughly by recency. */
-export const organisations = [
-  "PEA",
-  "One Bangkok",
-  "Amarin Group",
-  "Hino Thailand",
-  "Nissan Thailand",
-  "Suzuki Thailand",
-  "Ford Thailand",
-  "Srisawad Capital",
-  "Worldlease",
-  "ECL Auto Cash",
-  "Just Car",
-  "Krispy Kreme Thailand",
+export const organisations: { name: string; full?: string }[] = [
+  { name: "PEA", full: "Provincial Electricity Authority" },
+  { name: "One Bangkok" },
+  { name: "Amarin Group" },
+  { name: "Hino Thailand" },
+  { name: "Nissan Thailand" },
+  { name: "Suzuki Thailand" },
+  { name: "Ford Thailand" },
+  { name: "Srisawad Capital" },
+  { name: "Worldlease" },
+  { name: "ECL Auto Cash" },
+  { name: "Just Car" },
+  { name: "Krispy Kreme Thailand" },
 ];
 
 export type ExperienceEntry = {

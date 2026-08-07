@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { profile } from "../data/portfolio";
 import { GrandContactCta } from "./GrandContactCta";
+import { GrandCopyMail } from "./GrandCopyMail";
 import { GrandProgress } from "./GrandProgress";
 import { GrandCursor } from "./GrandCursor";
 import { GrandHero } from "./GrandHero";
@@ -68,6 +69,8 @@ export function GrandLayout() {
 
   return (
     <div className="g-root">
+      <div className="g-aurora" aria-hidden />
+      <div className="g-aurora-veil" aria-hidden />
       <GrandCursor />
       <GrandProgress />
       <GrandContactCta />
@@ -122,7 +125,10 @@ export function GrandLayout() {
             </a>
           ))}
           <div className="g-menu-meta">
-            <a href={`mailto:${profile.email}`}>{profile.email}</a>
+            <span className="g-menu-mailrow">
+              <a href={`mailto:${profile.email}`}>{profile.email}</a>
+              <GrandCopyMail email={profile.email} />
+            </span>
             <a href={`tel:${profile.phone}`}>{profile.phone}</a>
             <a href={profile.linkedin.url} target="_blank" rel="noopener noreferrer">
               LinkedIn
