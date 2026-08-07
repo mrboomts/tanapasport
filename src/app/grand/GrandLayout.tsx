@@ -62,8 +62,10 @@ export function GrandLayout() {
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
+    document.body.dataset.menuOpen = String(menuOpen);
     return () => {
       document.body.style.overflow = "";
+      delete document.body.dataset.menuOpen;
     };
   }, [menuOpen]);
 

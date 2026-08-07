@@ -197,7 +197,9 @@
 .g-menu {
   position: fixed;
   inset: 76px 0 0 0;
-  z-index: 45;
+  /* above .g-cursor (60) so the scroll ring cannot float over the
+     contact details; still below .g-progress (70) */
+  z-index: 65;
   background: rgba(10, 9, 18, 0.98);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -2355,4 +2357,14 @@
   .g-ring-arrow {
     animation: none;
   }
+}
+
+/* Decorative pointer layer stands down while the menu is open. */
+body[data-menu-open="true"] .g-cursor {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.g-cursor {
+  transition: opacity 0.25s ease;
 }
