@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "motion/react";
-import { ArrowDown } from "lucide-react";
-import { experience, profile, projectGroups } from "../data/portfolio";
+import { experience, organisations, profile, projectGroups } from "../data/portfolio";
 import { images } from "../data/images";
-import { certRows } from "../components/sections/Certifications";
+import { certRows } from "../data/certifications";
 import { GrandArtifact } from "./GrandArtifact";
 
 const UX_START_YEAR = 2022;
@@ -80,6 +79,8 @@ export function GrandHero() {
   return (
     <>
       <section id="g-index" className="g-hero">
+        <div className="g-hero-lines" aria-hidden />
+
         <div className="g-hero-grid">
           <div className="g-hero-copy">
             <motion.p className="g-eyebrow" custom={0} variants={rise} initial="hidden" animate="show">
@@ -93,18 +94,15 @@ export function GrandHero() {
             </motion.h1>
 
             <motion.div className="g-alias-row" custom={2} variants={rise} initial="hidden" animate="show">
-              <img className="g-alias-avatar" src={images.profilePhoto} alt={profile.fullName} />
+              <span className="g-alias-avatar">
+                <img src={images.profileFace} alt={profile.fullName} />
+              </span>
               <p className="g-alias">“{profile.nickname}”</p>
             </motion.div>
 
             <motion.p className="g-hero-intro" custom={3} variants={rise} initial="hidden" animate="show">
               {profile.intro}
             </motion.p>
-
-            <motion.a href="#g-work" className="g-cta" custom={4} variants={rise} initial="hidden" animate="show">
-              <span>See selected work</span>
-              <ArrowDown className="w-4 h-4" />
-            </motion.a>
           </div>
 
           <motion.div
@@ -118,27 +116,32 @@ export function GrandHero() {
         </div>
 
         <div className="g-scrollcue" aria-hidden>
-          <span className="g-scrollcue-line" />
-          Scroll
+          <span className="g-scrollcue-mouse">
+            <span className="g-scrollcue-wheel" />
+          </span>
+          Scroll down
         </div>
       </section>
 
-      {/* Skills ticker */}
-      <div className="g-marquee" aria-hidden>
-        <div className="g-marquee-track">
-          {[0, 1].map((copy) => (
-            <div className="g-marquee-group" key={copy}>
-              {profile.skills.map((s) => (
-                <span className="g-marquee-item" key={`${copy}-${s}`}>
-                  {s}
-                  <i className="g-marquee-dot" />
-                </span>
-              ))}
-            </div>
-          ))}
+      {/* Organisations ticker */}
+      <div className="g-marquee">
+        <p className="g-marquee-label">Organisations my work has shipped for</p>
+        <div className="g-marquee-viewport">
+          <div className="g-marquee-track" aria-hidden>
+            {[0, 1].map((copy) => (
+              <div className="g-marquee-group" key={copy}>
+                {organisations.map((o) => (
+                  <span className="g-marquee-item" key={`${copy}-${o}`}>
+                    {o}
+                    <i className="g-marquee-dot" />
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
+        <p className="sr-only">{organisations.join(", ")}</p>
       </div>
-      <p className="sr-only">Skills: {profile.skills.join(", ")}</p>
 
       {/* Figures */}
       <section className="g-figures">

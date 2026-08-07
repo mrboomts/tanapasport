@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { profile } from "../data/portfolio";
-import { ThemeToggle } from "../theme/ThemeToggle";
+import { GrandCursor } from "./GrandCursor";
 import { GrandHero } from "./GrandHero";
 import { GrandJourney } from "./GrandJourney";
 import { GrandExperience } from "./GrandExperience";
@@ -14,7 +14,7 @@ export const GRAND_SECTIONS = [
   { id: "g-index", num: "01", label: "Index" },
   { id: "g-experience", num: "02", label: "Experience" },
   { id: "g-work", num: "03", label: "Work" },
-  { id: "g-credentials", num: "04", label: "Credentials" },
+  { id: "g-credentials", num: "04", label: "Certifications" },
   { id: "g-profile", num: "05", label: "Profile" },
 ];
 
@@ -66,6 +66,8 @@ export function GrandLayout() {
 
   return (
     <div className="g-root">
+      <GrandCursor />
+
       {/* ---------- Desktop side rail ---------- */}
       <aside className="g-rail" aria-label="Section navigation">
         <a href="#g-index" className="g-monogram">
@@ -82,7 +84,9 @@ export function GrandLayout() {
         </nav>
 
         <div className="g-rail-foot">
-          <ThemeToggle />
+          <a href={`mailto:${profile.email}`} className="g-rail-mail" aria-label="Email me">
+            @
+          </a>
         </div>
       </aside>
 
@@ -92,7 +96,6 @@ export function GrandLayout() {
           TS
         </a>
         <div className="g-topbar-actions">
-          <ThemeToggle />
           <button
             type="button"
             className="g-iconbtn"

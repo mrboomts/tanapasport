@@ -1,4 +1,4 @@
-import { hobbies, profile } from "../data/portfolio";
+import { hobbies, profile, skillGroups } from "../data/portfolio";
 import { images } from "../data/images";
 
 export function GrandProfile() {
@@ -69,6 +69,26 @@ export function GrandProfile() {
               </a>
             </div>
           </div>
+        </div>
+
+        <div className="g-subsection">
+          <h3 className="g-subsection-title">What I can do</h3>
+          <p className="g-subsection-lede">Tools and methods I reach for, grouped so you can scan them.</p>
+        </div>
+
+        <div className="g-skills">
+          {skillGroups.map((group) => (
+            <div className="g-skillgroup" key={group.label}>
+              <h4 className="g-skillgroup-label">{group.label}</h4>
+              <ul className="g-skilllist">
+                {group.items.map((s) => (
+                  <li className="g-skill" key={s}>
+                    {s}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
         <div className="g-subsection">

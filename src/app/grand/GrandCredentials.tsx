@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import { ArrowUpRight } from "lucide-react";
-import { certRows } from "../components/sections/Certifications";
+import { certRows } from "../data/certifications";
 
 /** Some issuer marks are single-colour and need a guaranteed backdrop:
  *  lightCard = black artwork, darkCard = white artwork. */
@@ -19,7 +19,7 @@ export function GrandCredentials() {
           04
         </span>
         <div>
-          <h2 className="g-section-title">Credentials</h2>
+          <h2 className="g-section-title">Certifications</h2>
           <p className="g-section-lede">
             UX/UI design, front-end development and digital marketing programmes — each one verifiable at
             source.

@@ -40,7 +40,7 @@
   --g-muted: #a49fbe;
   --g-hair: rgba(233, 200, 119, 0.2);
   --g-gold-grad: linear-gradient(120deg, #f7e2a8 0%, #e9c877 45%, #c9a253 100%);
-  --g-rail-w: 112px;
+  --g-rail-w: 136px;
   --g-pad-x: clamp(1.25rem, 5vw, 6rem);
 
   scroll-padding-top: 84px;
@@ -371,13 +371,21 @@
 }
 
 .g-alias-avatar {
-  width: clamp(54px, 7vw, 74px);
-  height: clamp(54px, 7vw, 74px);
+  width: clamp(76px, 9vw, 116px);
+  height: clamp(76px, 9vw, 116px);
   border-radius: 999px;
-  object-fit: cover;
-  object-position: center 26%;
-  border: 1px solid rgba(233, 200, 119, 0.5);
+  border: 1px solid rgba(233, 200, 119, 0.55);
+  box-shadow: 0 0 0 6px rgba(233, 200, 119, 0.07);
+  overflow: hidden;
   flex: none;
+  display: block;
+}
+
+/* already a face-centred crop, so no repositioning needed */
+.g-alias-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .g-alias {
@@ -435,9 +443,10 @@
 
 .g-orb {
   position: relative;
-  width: clamp(220px, 32vw, 320px);
-  height: clamp(220px, 32vw, 320px);
-  perspective: 900px;
+  /* fills the space the hero column actually gives it */
+  width: clamp(240px, 38vw, 460px);
+  height: clamp(240px, 38vw, 460px);
+  perspective: 1100px;
   cursor: grab;
   touch-action: none; /* the pointer handlers own the gesture */
 }
@@ -477,9 +486,9 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 96px;
-  height: 96px;
-  margin: -48px 0 0 -48px;
+  width: 132px;
+  height: 132px;
+  margin: -66px 0 0 -66px;
   transform-style: preserve-3d;
   animation: g-cube-spin 22s linear infinite;
 }
@@ -491,20 +500,20 @@
   background: linear-gradient(135deg, rgba(233, 200, 119, 0.14), rgba(124, 92, 255, 0.12));
 }
 
-.g-face--fr { transform: translateZ(48px); }
-.g-face--bk { transform: rotateY(180deg) translateZ(48px); }
-.g-face--rt { transform: rotateY(90deg) translateZ(48px); }
-.g-face--lf { transform: rotateY(-90deg) translateZ(48px); }
-.g-face--tp { transform: rotateX(90deg) translateZ(48px); }
-.g-face--bm { transform: rotateX(-90deg) translateZ(48px); }
+.g-face--fr { transform: translateZ(66px); }
+.g-face--bk { transform: rotateY(180deg) translateZ(66px); }
+.g-face--rt { transform: rotateY(90deg) translateZ(66px); }
+.g-face--lf { transform: rotateY(-90deg) translateZ(66px); }
+.g-face--tp { transform: rotateX(90deg) translateZ(66px); }
+.g-face--bm { transform: rotateX(-90deg) translateZ(66px); }
 
 .g-orb-core {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 150px;
-  height: 150px;
-  margin: -75px 0 0 -75px;
+  width: 210px;
+  height: 210px;
+  margin: -105px 0 0 -105px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(247, 226, 168, 0.5), rgba(233, 200, 119, 0) 68%);
   filter: blur(8px);
@@ -1572,4 +1581,307 @@
   .g-root {
     background-attachment: scroll;
   }
+}
+
+/* ============================================================
+   Additions: hero texture, scroll cue, ticker label, skills,
+   pointer flourish, larger issuer marks
+   ============================================================ */
+
+/* ---------- Hero line texture ---------- */
+.g-hero-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      rgba(233, 200, 119, 0.055) 0 1px,
+      transparent 1px 96px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(124, 92, 255, 0.05) 0 1px,
+      transparent 1px 96px
+    );
+  /* fade the grid out toward the edges so it reads as texture, not a table */
+  -webkit-mask-image: radial-gradient(ellipse 78% 68% at 50% 46%, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 78% 68% at 50% 46%, #000 35%, transparent 100%);
+}
+
+.g-hero-grid,
+.g-scrollcue {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- Scroll cue ---------- */
+.g-scrollcue {
+  position: absolute;
+  left: var(--g-pad-x);
+  bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(244, 241, 232, 0.62);
+}
+
+.g-scrollcue-mouse {
+  width: 20px;
+  height: 32px;
+  border: 1px solid rgba(233, 200, 119, 0.6);
+  border-radius: 999px;
+  display: flex;
+  justify-content: center;
+  padding-top: 6px;
+  flex: none;
+}
+
+.g-scrollcue-wheel {
+  width: 2px;
+  height: 6px;
+  border-radius: 2px;
+  background: var(--g-gold);
+  animation: g-wheel 1.6s ease-in-out infinite;
+}
+
+@keyframes g-wheel {
+  0%, 100% { transform: translateY(0); opacity: 1; }
+  60% { transform: translateY(8px); opacity: 0.2; }
+}
+
+/* ---------- Ticker label + pause affordance ---------- */
+.g-marquee {
+  border-top: 1px solid var(--g-hair);
+  border-bottom: 1px solid var(--g-hair);
+  padding: 1.35rem 0 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.g-marquee-label {
+  padding: 0 var(--g-pad-x);
+  margin: 0 0 0.9rem;
+  font-size: 10px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--g-gold-dk);
+}
+
+.g-marquee-viewport {
+  overflow: hidden;
+}
+
+/* WCAG 2.2.2 — give people a way to stop the movement */
+.g-marquee-viewport:hover .g-marquee-track,
+.g-marquee-viewport:focus-within .g-marquee-track {
+  animation-play-state: paused;
+}
+
+.g-marquee-item {
+  color: rgba(244, 241, 232, 0.82);
+}
+
+/* ---------- Skills ---------- */
+.g-skills {
+  display: grid;
+  gap: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+@media (min-width: 700px) {
+  .g-skills {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1050px) {
+  .g-skills {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.g-skillgroup-label {
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--g-gold-dk);
+  margin: 0 0 0.75rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--g-hair);
+}
+
+.g-skilllist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.g-skill {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid rgba(233, 200, 119, 0.25);
+  border-radius: 999px;
+  color: rgba(244, 241, 232, 0.85);
+  transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.g-skill:hover {
+  border-color: rgba(233, 200, 119, 0.6);
+  color: var(--g-gold-lt);
+  transform: translateY(-2px);
+}
+
+/* ---------- Rail mail link ---------- */
+.g-rail-mail {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid rgba(233, 200, 119, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--g-gold-lt);
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.g-rail-mail:hover {
+  background: rgba(233, 200, 119, 0.12);
+  transform: translateY(-2px);
+}
+
+/* ---------- Pointer flourish ---------- */
+.g-cursor {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 60;
+}
+
+.g-cursor-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 460px;
+  height: 460px;
+  margin: -230px 0 0 -230px;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  background: radial-gradient(
+    circle,
+    rgba(233, 200, 119, 0.13) 0%,
+    rgba(124, 92, 255, 0.1) 38%,
+    transparent 68%
+  );
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+
+.g-spark {
+  position: absolute;
+  width: var(--sz, 4px);
+  height: var(--sz, 4px);
+  margin: calc(var(--sz, 4px) / -2) 0 0 calc(var(--sz, 4px) / -2);
+  border-radius: 50%;
+  background: var(--g-gold-lt);
+  box-shadow: 0 0 10px rgba(233, 200, 119, 0.9);
+  opacity: 0;
+}
+
+.g-spark.is-on {
+  animation: g-spark-fall 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes g-spark-fall {
+  0% { opacity: 0.95; transform: translate3d(0, 0, 0) scale(1); }
+  100% { opacity: 0; transform: translate3d(var(--dx, 0), var(--dy, 26px), 0) scale(0.3); }
+}
+
+/* ---------- Larger issuer marks ---------- */
+.g-cred-mark {
+  width: 100%;
+  max-width: 210px;
+  height: 92px;
+  border-radius: 6px;
+  padding: 10px 16px;
+  margin-bottom: 0.6rem;
+}
+
+/* ---------- Auto-running walker ---------- */
+.g-journey-walker {
+  left: 0;
+  animation: g-walk 11s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+.g-journey-track-fill {
+  width: 0;
+  animation: g-track 11s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+.g-journey-word--fill {
+  opacity: 0;
+  animation: g-wordfill 11s ease-in-out infinite;
+}
+
+.g-journey-tag--before {
+  animation: g-tag-out 11s ease-in-out infinite;
+}
+
+.g-journey-tag--after {
+  opacity: 0;
+  animation: g-tag-in 11s ease-in-out infinite;
+}
+
+@keyframes g-walk {
+  0%   { left: 1%; }
+  6%   { left: 1%; }
+  94%  { left: 92%; }
+  100% { left: 92%; }
+}
+
+@keyframes g-track {
+  0%   { width: 1%; }
+  6%   { width: 1%; }
+  94%  { width: 92%; }
+  100% { width: 92%; }
+}
+
+@keyframes g-wordfill {
+  0%, 22%   { opacity: 0; }
+  55%, 100% { opacity: 1; }
+}
+
+@keyframes g-tag-out {
+  0%, 42%  { opacity: 1; }
+  52%, 100% { opacity: 0; }
+}
+
+@keyframes g-tag-in {
+  0%, 48%  { opacity: 0; }
+  58%, 100% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .g-journey-walker,
+  .g-journey-track-fill,
+  .g-journey-word--fill,
+  .g-journey-tag--before,
+  .g-journey-tag--after,
+  .g-scrollcue-wheel {
+    animation: none;
+  }
+  .g-journey-walker { left: 92%; }
+  .g-journey-track-fill { width: 92%; }
+  .g-journey-word--fill { opacity: 1; }
+  .g-journey-tag--before { opacity: 0; }
+  .g-journey-tag--after { opacity: 1; }
 }

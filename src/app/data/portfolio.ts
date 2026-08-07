@@ -32,6 +32,48 @@ export const profile = {
   ],
 };
 
+/** Same skills as profile.skills, grouped so they can be scanned rather
+ *  than watched scrolling past. */
+export const skillGroups = [
+  {
+    label: "Design",
+    items: ["Figma", "Adobe XD", "Adobe Illustrator", "Adobe Photoshop", "Affinity Designer", "Affinity Photo"],
+  },
+  {
+    label: "Method",
+    items: ["Wireframes", "Prototype", "User flow", "User journey", "Persona", "Design systems"],
+  },
+  {
+    label: "Build",
+    items: ["HTML", "CSS", "SCSS", "Javascript", "Bootstrap", "Git", "Vercel", "Supabase"],
+  },
+  {
+    label: "AI",
+    items: ["Claude", "ChatGPT", "Gemini", "Grok", "Midjourney", "Suno", "Vibe coding"],
+  },
+  {
+    label: "Growth & analysis",
+    items: ["SEO", "Google analytics", "Youtube", "Investment", "Financial analyzing"],
+  },
+];
+
+/** Organisations the products I designed were delivered for — used by the
+ *  ticker band. Ordered roughly by recency. */
+export const organisations = [
+  "PEA",
+  "One Bangkok",
+  "Amarin Group",
+  "Hino Thailand",
+  "Nissan Thailand",
+  "Suzuki Thailand",
+  "Ford Thailand",
+  "Srisawad Capital",
+  "Worldlease",
+  "ECL Auto Cash",
+  "Just Car",
+  "Krispy Kreme Thailand",
+];
+
 export type ExperienceEntry = {
   role: string;
   company?: string;

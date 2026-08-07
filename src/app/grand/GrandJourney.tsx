@@ -1,6 +1,3 @@
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "motion/react";
-
 function Walker() {
   return (
     <svg className="g-walker" viewBox="0 0 44 64" fill="none" aria-hidden>
@@ -14,18 +11,15 @@ function Walker() {
   );
 }
 
+/**
+ * The career switch, told as a loop: the figure walks itself across the
+ * band, its label flipping from Banker to UX/UI Designer as it passes
+ * through SELF-LEARNING. All timing is CSS so it runs independently of
+ * scrolling, and stops entirely under prefers-reduced-motion.
+ */
 export function GrandJourney() {
-  const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 0.85", "end 0.55"] });
-
-  const x = useTransform(scrollYProgress, [0, 1], ["1%", "88%"]);
-  const bankerOpacity = useTransform(scrollYProgress, [0, 0.38, 0.5], [1, 1, 0]);
-  const designerOpacity = useTransform(scrollYProgress, [0.5, 0.62, 1], [0, 1, 1]);
-  const wordFill = useTransform(scrollYProgress, [0.25, 0.72], [0, 1]);
-  const trackFill = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
-
   return (
-    <section className="g-journey" ref={ref}>
+    <section className="g-journey">
       <p className="g-eyebrow">
         <span className="g-eyebrow-rule" />
         The switch
@@ -37,25 +31,21 @@ export function GrandJourney() {
         <span className="g-journey-word" aria-hidden>
           SELF-LEARNING
         </span>
-        <motion.span className="g-journey-word g-journey-word--fill" style={{ opacity: wordFill }} aria-hidden>
+        <span className="g-journey-word g-journey-word--fill" aria-hidden>
           SELF-LEARNING
-        </motion.span>
-
-        <span className="g-journey-track" aria-hidden>
-          <motion.span className="g-journey-track-fill" style={{ width: trackFill }} />
         </span>
 
-        <motion.div className="g-journey-walker" style={{ left: x }}>
+        <span className="g-journey-track" aria-hidden>
+          <span className="g-journey-track-fill" />
+        </span>
+
+        <div className="g-journey-walker" aria-hidden>
           <span className="g-journey-tags">
-            <motion.span className="g-journey-tag" style={{ opacity: bankerOpacity }}>
-              Banker
-            </motion.span>
-            <motion.span className="g-journey-tag g-journey-tag--gold" style={{ opacity: designerOpacity }}>
-              UX/UI Designer
-            </motion.span>
+            <span className="g-journey-tag g-journey-tag--before">Banker</span>
+            <span className="g-journey-tag g-journey-tag--after">UX/UI Designer</span>
           </span>
           <Walker />
-        </motion.div>
+        </div>
       </div>
 
       <ol className="g-journey-marks">

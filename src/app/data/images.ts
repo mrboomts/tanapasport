@@ -1,4 +1,5 @@
 import profilePhoto from "../../imports/Desktop1-1/a648590a010823bec220e76dd82f4f818be0d772.png";
+import profileFace from "../../imports/Desktop1-1/profile-face-avatar.png";
 import aboutPhoto from "../../imports/Desktop1-1/0e674118fb35b29e3e2371a422971589ef3f3ea3.png";
 
 import projWealthUp from "../../imports/Desktop1-1/b8b176be918d7fc7027c58c6dda7ee0ca8fb298b.png";
@@ -45,6 +46,7 @@ import hobbyMovies from "../../imports/Desktop1-1/90cad64e28a901e29740a33ddd7879
 
 export const images = {
   profilePhoto,
+  profileFace,
   aboutPhoto,
   projects: {
     "Wealth Up": projWealthUp,
