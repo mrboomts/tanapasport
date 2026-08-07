@@ -2268,3 +2268,91 @@
   z-index: 0;
   background: rgba(10, 9, 18, 0.45);
 }
+
+/* ============================================================
+   Rotating "scroll down" ring
+   One motif, two homes: it trails the cursor where there is one,
+   and parks itself in the hero on touch / reduced-motion.
+   ============================================================ */
+.g-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 108px;
+  height: 108px;
+  margin: -54px 0 0 -54px;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+  will-change: transform;
+}
+
+.g-ring[data-hidden="true"] {
+  opacity: 0;
+}
+
+.g-ring-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  animation: g-ring-spin 16s linear infinite;
+}
+
+.g-ring-text {
+  font-family: var(--font-body);
+  /* two repeats sized to fill the circumference without the words
+     running into each other */
+  font-size: 9.6px;
+  letter-spacing: 0.2em;
+  fill: var(--g-gold);
+}
+
+.g-ring-arrow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  color: var(--g-gold-lt);
+  animation: g-ring-arrow 1.9s ease-in-out infinite;
+}
+
+@keyframes g-ring-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes g-ring-arrow {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  55% {
+    transform: translateY(5px);
+    opacity: 0.4;
+  }
+}
+
+/* No pointer to follow — anchor it where the old scroll cue sat. */
+/* No pointer to follow — anchor it where the old scroll cue sat, and
+   size it up a little since it is the only scroll affordance there. */
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .g-ring {
+    top: auto;
+    left: var(--g-pad-x);
+    bottom: 1.75rem;
+    width: 124px;
+    height: 124px;
+    margin: 0;
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .g-ring-svg,
+  .g-ring-arrow {
+    animation: none;
+  }
+}

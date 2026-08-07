@@ -115,12 +115,6 @@ export function GrandHero() {
           </motion.div>
         </div>
 
-        <div className="g-scrollcue" aria-hidden>
-          <span className="g-scrollcue-mouse">
-            <span className="g-scrollcue-wheel" />
-          </span>
-          Scroll down
-        </div>
       </section>
 
       {/* Organisations ticker */}

@@ -1,15 +1,53 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const SPARKS = 18;
+const RING_LABEL = "SCROLL\u00A0DOWN\u00A0•\u00A0SCROLL\u00A0DOWN\u00A0•\u00A0";
 
 /**
- * Pointer flourish: a soft glow that trails the cursor plus sparks that
- * shed when it moves quickly. Fine-pointer devices only, and disabled
- * under prefers-reduced-motion — it is pure decoration.
+ * Pointer flourish plus the rotating "scroll down" ring.
+ *
+ * The ring is the same motif on every device, it just gets a different
+ * home: it trails the cursor where there is one, and parks itself in the
+ * hero on touch. It retires once the hero is behind you, because by then
+ * the instruction is no longer true.
+ *
+ * The glow and sparks are pointer-only decoration and stay disabled for
+ * touch and for prefers-reduced-motion.
  */
 export function GrandCursor() {
   const glowRef = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
   const layerRef = useRef<HTMLDivElement>(null);
+  const pathRef = useRef<SVGPathElement>(null);
+  const textPathRef = useRef<SVGTextPathElement>(null);
+  const [showRing, setShowRing] = useState(true);
+
+  // Stretch the label to exactly one revolution so the spacing between
+  // every word and bullet is identical, including across the wrap point.
+  useEffect(() => {
+    const path = pathRef.current;
+    const textPath = textPathRef.current;
+    if (!path || !textPath) return;
+    const len = path.getTotalLength();
+    textPath.setAttribute("textLength", String(len));
+    textPath.setAttribute("lengthAdjust", "spacing");
+  }, []);
+
+  // Retire the ring once the hero is scrolled past.
+  useEffect(() => {
+    let raf = 0;
+    const update = () => setShowRing(window.scrollY < window.innerHeight * 0.55);
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, []);
 
   useEffect(() => {
     const finePointer = window.matchMedia("(pointer: fine)").matches;
@@ -20,7 +58,6 @@ export function GrandCursor() {
     const glow = glowRef.current;
     if (!layer || !glow) return;
 
-    // reusable pool so we never churn DOM nodes
     const pool: HTMLSpanElement[] = [];
     for (let i = 0; i < SPARKS; i++) {
       const s = document.createElement("span");
@@ -34,6 +71,8 @@ export function GrandCursor() {
     let ty = window.innerHeight / 2;
     let gx = tx;
     let gy = ty;
+    let rx = tx;
+    let ry = ty;
     let lastX = tx;
     let lastY = ty;
     let visible = false;
@@ -56,14 +95,11 @@ export function GrandCursor() {
       if (speed > 9) {
         const s = pool[cursor];
         cursor = (cursor + 1) % SPARKS;
-        const jitterX = (Math.random() - 0.5) * 26;
-        const jitterY = (Math.random() - 0.5) * 26;
-        s.style.left = `${tx + jitterX}px`;
-        s.style.top = `${ty + jitterY}px`;
+        s.style.left = `${tx + (Math.random() - 0.5) * 26}px`;
+        s.style.top = `${ty + (Math.random() - 0.5) * 26}px`;
         s.style.setProperty("--dx", `${(Math.random() - 0.5) * 44}px`);
         s.style.setProperty("--dy", `${18 + Math.random() * 34}px`);
         s.style.setProperty("--sz", `${3 + Math.random() * 3}px`);
-        // restart the animation on a reused node
         s.classList.remove("is-on");
         void s.offsetWidth;
         s.classList.add("is-on");
@@ -80,6 +116,14 @@ export function GrandCursor() {
       gx += (tx - gx) * 0.13;
       gy += (ty - gy) * 0.13;
       glow.style.transform = `translate3d(${gx}px, ${gy}px, 0)`;
+
+      // the ring lags a little further behind for a trailing feel
+      if (ringRef.current) {
+        rx += (tx - rx) * 0.08;
+        ry += (ty - ry) * 0.08;
+        ringRef.current.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
+      }
+
       raf = requestAnimationFrame(tick);
     };
 
@@ -99,6 +143,22 @@ export function GrandCursor() {
     <div className="g-cursor" aria-hidden>
       <div className="g-cursor-glow" ref={glowRef} />
       <div className="g-cursor-sparks" ref={layerRef} />
+
+      <div className="g-ring" ref={ringRef} data-hidden={!showRing}>
+        <svg viewBox="0 0 100 100" className="g-ring-svg">
+          <defs>
+            <path ref={pathRef} id="g-ring-path" d="M 50,11 a 39,39 0 1,1 -0.01,0" fill="none" />
+          </defs>
+          <text className="g-ring-text">
+            <textPath ref={textPathRef} href="#g-ring-path" startOffset="0">
+              {RING_LABEL}
+            </textPath>
+          </text>
+        </svg>
+        <svg className="g-ring-arrow" viewBox="0 0 24 24" fill="none" strokeWidth="1.6">
+          <path d="M12 5v14M6 13l6 6 6-6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
     </div>
   );
 }
