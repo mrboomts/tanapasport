@@ -34,11 +34,62 @@ import hMeterCover from "../../imports/HMeterPage/hmeter-card-cover.png";
 import pdpaAmarinCover from "../../imports/PdpaAmarinPage/pdpa-amarin-card-cover.png";
 import oneTruthCover from "../../imports/OneTruthPage/1truth-card-cover.png";
 import sasCardGameCover from "../../imports/SasCardGamePage/sas-cardgame-card-cover.png";
+import peaLogin from "../../imports/CaseStudies/pea-login.webp";
+import peaSubmission from "../../imports/CaseStudies/pea-submission.webp";
+import peaInspection from "../../imports/CaseStudies/pea-inspection.webp";
+import obLocation from "../../imports/CaseStudies/ob-location.webp";
+import obSpecialHours from "../../imports/CaseStudies/ob-special-hours.webp";
+import obState from "../../imports/CaseStudies/ob-state.webp";
+import obNodes from "../../imports/CaseStudies/ob-nodes.webp";
+import obAppHome from "../../imports/CaseStudies/ob-app-home.webp";
+import obAppMap from "../../imports/CaseStudies/ob-app-map.webp";
+import obAppMapIndoor from "../../imports/CaseStudies/ob-app-map-indoor.webp";
+import obAppDirectory from "../../imports/CaseStudies/ob-app-directory.webp";
+import amDashboard from "../../imports/CaseStudies/am-dashboard.webp";
+import amDashboardDark from "../../imports/CaseStudies/am-dashboard-dark.webp";
+import amExpiry from "../../imports/CaseStudies/am-expiry.webp";
+import amConsent from "../../imports/CaseStudies/am-consent.webp";
+import amFiles from "../../imports/CaseStudies/am-files.webp";
+
+import { projectGroups, type Project } from "./portfolio";
 
 export type Action = {
   label: string;
   href: string;
   variant: "primary" | "secondary" | "appstore" | "playstore";
+};
+
+/**
+ * A screen in the case-study layout.
+ *
+ * `frame` says how it was captured, not what it is: "plain" for artwork
+ * that already sits on its own backdrop, "browser" for raw UI that needs a
+ * window drawn round it, "mac" to stand a wide capture in a laptop, and
+ * "phone" for handset captures. The PEA exports came out of Chrome with
+ * real browser chrome in the frame, so those take "plain".
+ */
+export type Screenshot = {
+  src: string;
+  caption: string;
+  frame: "plain" | "browser" | "mac" | "phone";
+  /** Optional prose. Left off until there is something worth saying. */
+  note?: string;
+  /** Starts a new titled run of screens when it changes. */
+  group?: string;
+  /** Backdrop for "plain" frames, for artwork exported without one. */
+  bg?: string;
+};
+
+/**
+ * The long-form project layout. Projects that declare one get the full
+ * treatment; everything else gets a minimal one synthesised from the
+ * portfolio data (see buildStudy), so the detail view is consistent.
+ */
+export type CaseStudy = {
+  subtitle?: string;
+  meta: { label: string; value: string }[];
+  highlights?: string[];
+  screens: Screenshot[];
 };
 
 export type ProjectDetail = {
@@ -52,7 +103,51 @@ export type ProjectDetail = {
   note?: string;
   noteRed?: string;
   actions: Action[];
+  study?: CaseStudy;
 };
+
+/**
+ * Every project gets the case-study layout. Where one has not been written
+ * by hand, this synthesises the least it needs from the index data: the
+ * meta strip and whatever cover artwork exists, with the captions left
+ * blank rather than invented.
+ */
+export function buildStudy(title: string, detail: ProjectDetail): CaseStudy {
+  if (detail.study) return detail.study;
+
+  let company: string | undefined;
+  let project: Project | undefined;
+  for (const group of projectGroups) {
+    for (const sub of group.subGroups ?? []) {
+      const hit = sub.items.find((p) => p.title === title);
+      if (hit) {
+        project = hit;
+        company = sub.company;
+      }
+    }
+    const hit = group.items?.find((p) => p.title === title);
+    if (hit) {
+      project = hit;
+      company = group.company;
+    }
+  }
+
+  const meta = [{ label: "Role", value: "UX/UI Designer" }];
+  if (company) meta.push({ label: "At", value: company });
+  if (project?.period) meta.push({ label: "Period", value: project.period });
+  if (project?.type) meta.push({ label: "Platform", value: project.type });
+
+  const screens: Screenshot[] = [detail.cover, detail.coverB, detail.coverC]
+    .filter((src): src is string => Boolean(src))
+    .map((src) => ({
+      src,
+      caption: "",
+      frame: "plain" as const,
+      bg: detail.whiteCard ? undefined : detail.bg,
+    }));
+
+  return { meta, screens };
+}
 
 export const projectDetails: Record<string, ProjectDetail> = {
   "Wealth Up": {
@@ -409,6 +504,44 @@ export const projectDetails: Record<string, ProjectDetail> = {
     title: "DMMS-PEA",
     bg: dmmsPeaCollage,
     cover: dmmsPeaCollage,
+    study: {
+      subtitle:
+        "A grid-connected renewable energy platform for Thailand's Provincial Electricity Authority",
+      meta: [
+        { label: "Role", value: "UX/UI Designer" },
+        { label: "Client", value: "Provincial Electricity Authority (PEA)" },
+        { label: "At", value: "The Island Digital Solution" },
+        { label: "Period", value: "Mar.2025 - Present" },
+        { label: "Platform", value: "Responsive website" },
+      ],
+      highlights: [
+        "Registration, inspection and contract flows for VSPP renewable producers",
+        "Document submission with queue booking and walk-in scheduling",
+        "Bilingual interface — Thai content with a TH/EN switch",
+        "User flows mapped on a FigJam board before any UI was drawn",
+        "A Figma design system covering components, tokens and states",
+      ],
+      screens: [
+        {
+          src: peaLogin,
+          caption: "Authentication",
+          frame: "mac",
+          note: "Producers sign in with Thailand's Digital ID or a DMMS account. Juristic persons are pushed to Digital ID, which is the route the regulator trusts.",
+        },
+        {
+          src: peaSubmission,
+          caption: "Document submission and queue booking",
+          frame: "plain",
+          note: "Step 7 of the purchase process. The applicant picks a date inside the open window, or books a walk-in slot, and the table below tracks every document already handed in.",
+        },
+        {
+          src: peaInspection,
+          caption: "Power plant inspection",
+          frame: "plain",
+          note: "Officers filter 600+ plants by name, project area, last inspection date and status, then work the list from the table.",
+        },
+      ],
+    },
     description:
       "DMMS (DERs Management and Monitoring System) is a platform for the Provincial Electricity Authority (PEA) that lets individuals and juristic persons sell electricity they generate themselves, such as from solar cells, back into the grid. It handles registration, inspection, and contract management for renewable energy producers.",
     actions: [
@@ -434,6 +567,81 @@ export const projectDetails: Record<string, ProjectDetail> = {
     title: "Log Pose - One Bangkok",
     bg: logPoseCover,
     cover: logPoseCover,
+    study: {
+      subtitle:
+        "The back-office CMS that places every shop and venue on the One Bangkok map",
+      meta: [
+        { label: "Role", value: "UX/UI Designer" },
+        { label: "Client", value: "One Bangkok" },
+        { label: "At", value: "The Island Digital Solution" },
+        { label: "Period", value: "Mar.2025 - Present" },
+        { label: "Platform", value: "Responsive website and mobile app" },
+      ],
+      highlights: [
+        "Every location record is authored in three languages — English, Thai and Chinese",
+        "Regular and special opening hours, with per-day overrides and apply-to-all",
+        "Location states scheduled between a start and end date",
+        "Per-node hours that inherit from the parent location or override it",
+        "UI adjustments to the map menu in the One Bangkok app itself",
+      ],
+      screens: [
+        {
+          src: obLocation,
+          caption: "Location information and regular hours",
+          frame: "mac",
+          note: "One record per shop or venue: names in three languages, type, nodes, relationships to other locations, then a full week of opening hours with an apply-to-all shortcut.",
+        },
+        {
+          src: obSpecialHours,
+          caption: "Special hours",
+          frame: "browser",
+          group: "Back-office CMS",
+          note: "Date-ranged overrides for holidays and events, each with its own on/off switch, so the regular week never has to be edited.",
+        },
+        {
+          src: obState,
+          caption: "Location state scheduling",
+          frame: "browser",
+          group: "Back-office CMS",
+          note: "States such as renovation or coming-soon are scheduled between a start and an end date, and stack when they overlap.",
+        },
+        {
+          src: obNodes,
+          caption: "Per-node hours",
+          frame: "browser",
+          group: "Back-office CMS",
+          note: "A location can span several nodes on the map. Each node either inherits the parent hours or breaks away with its own.",
+        },
+        {
+          src: obAppHome,
+          caption: "App home",
+          frame: "phone",
+          group: "The app the CMS feeds",
+          note: "The shortcut grid the CMS content surfaces in — promotions, dining, rewards and the map.",
+        },
+        {
+          src: obAppMap,
+          caption: "Project map",
+          frame: "phone",
+          group: "The app the CMS feeds",
+          note: "The whole One Bangkok site as a 3D map, with a building picker and a floor selector. Every pin here is a record placed in Log Pose.",
+        },
+        {
+          src: obAppMapIndoor,
+          caption: "Indoor wayfinding",
+          frame: "phone",
+          group: "The app the CMS feeds",
+          note: "Down to floor level, with the visitor's own position — the node positions set in the CMS are what put the shops where they are.",
+        },
+        {
+          src: obAppDirectory,
+          caption: "Building directory",
+          frame: "phone",
+          group: "The app the CMS feeds",
+          note: "Browsing by building. This is the map menu section whose UI I adjusted.",
+        },
+      ],
+    },
     description:
       "Log Pose is a back-office web app for the One Bangkok app, used by staff to set the position of each shop and location within the One Bangkok project area. It also includes some UI adjustments to the map menu section of the app itself.",
     actions: [
@@ -485,6 +693,56 @@ export const projectDetails: Record<string, ProjectDetail> = {
     ],
   },
   "PDPA Manager - Amarin": {
+    study: {
+      subtitle:
+        "A personal-data file manager built to keep Amarin Group inside Thailand's PDPA",
+      meta: [
+        { label: "Role", value: "UX/UI Designer" },
+        { label: "Client", value: "Amarin Group" },
+        { label: "At", value: "The Island Digital Solution" },
+        { label: "Period", value: "Mar.2025 - Present" },
+        { label: "Platform", value: "Responsive website" },
+      ],
+      highlights: [
+        "A dashboard covering file types, data sources, monthly trend and consent status",
+        "Retention periods per file, with an expiry countdown and a calendar of what lapses when",
+        "Consent requests tracked by channel — email, SMS or in-app — and approved or rejected in place",
+        "Data-store locations plotted on a map of Thailand, grouped by region",
+        "Light and dark themes across the whole system",
+      ],
+      screens: [
+        {
+          src: amDashboard,
+          caption: "System overview",
+          frame: "mac",
+          note: "Everything the data protection officer needs on one screen: what file types are held, where they came from, the six-month trend, and how many consents are still outstanding.",
+        },
+        {
+          src: amExpiry,
+          caption: "Expiry calendar",
+          frame: "browser",
+          note: "Retention periods land on a month view, so the days when files lapse are visible before they arrive rather than after.",
+        },
+        {
+          src: amFiles,
+          caption: "File management",
+          frame: "browser",
+          note: "Every file with its data subject, category, expiry date and days left. Anything inside the warning window flags itself as expiring.",
+        },
+        {
+          src: amConsent,
+          caption: "Consent requests",
+          frame: "browser",
+          note: "Requests are tracked by the channel they went out on and cleared or refused from the row itself.",
+        },
+        {
+          src: amDashboardDark,
+          caption: "Dark theme and navigation",
+          frame: "browser",
+          note: "The same dashboard in dark, with the section drawer open. Both themes were drawn as one system rather than as an afterthought.",
+        },
+      ],
+    },
     title: "PDPA Manager - Amarin",
     bg: pdpaAmarinCover,
     cover: pdpaAmarinCover,
@@ -494,7 +752,7 @@ export const projectDetails: Record<string, ProjectDetail> = {
     actions: [
       {
         label: "Visit website",
-        href: "https://www.figma.com/make/WqdS2wWt3NRFC9YdpLNxFR/PDPA-File-Management-Features--Copy-?p=f&t=omyucMblZwmTXeJ6-0",
+        href: "https://nectar-navy-87091056.figma.site/",
         variant: "primary",
       },
     ],

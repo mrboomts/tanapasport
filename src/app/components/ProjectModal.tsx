@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { motion } from "motion/react";
-import type { ProjectDetail } from "../data/projectDetails";
+import { buildStudy, type ProjectDetail } from "../data/projectDetails";
 import { Button } from "./ds/Button";
+import { CaseStudy } from "./CaseStudy";
 
 export function ProjectModal({
   detail,
@@ -16,9 +17,13 @@ export function ProjectModal({
       if (e.key === "Escape") onClose();
     };
     document.body.style.overflow = "hidden";
+    // the rail, the scroll ring, the progress bar and the floating CTA all
+    // sit above or beside the page; none of them belong over a detail view
+    document.body.dataset.modalOpen = "true";
     window.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = "";
+      delete document.body.dataset.modalOpen;
       window.removeEventListener("keydown", onKey);
     };
   }, [detail, onClose]);
@@ -48,89 +53,20 @@ export function ProjectModal({
           Projects
         </p>
 
-        <div className="flex flex-col gap-5">
-          <h1
-            className="font-display"
-            style={{ fontSize: "clamp(1.75rem, 4vw, 3rem)", lineHeight: 1.15, fontWeight: 700 }}
-          >
-            {detail.title}
-          </h1>
+        <CaseStudy
+          title={detail.title}
+          study={buildStudy(detail.title, detail)}
+          overview={detail.description}
+          note={detail.note}
+          noteRed={detail.noteRed}
+        />
 
-          <div className="flex flex-col lg:flex-row gap-[50px] items-stretch">
-            {detail.coverB ? (
-              <div className="flex flex-col gap-[10px] shrink-0">
-                {[detail.cover, detail.coverB, detail.coverC]
-                  .filter((src): src is string => Boolean(src))
-                  .map((src, i) => (
-                  <div
-                    key={i}
-                    className="relative rounded-[20px] overflow-hidden flex items-center justify-center"
-                    style={{
-                      width: 270,
-                      height: 200,
-                      backgroundImage: `url(${detail.bg})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                    }}
-                  >
-                    <img src={src} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div
-                className="relative rounded-[30px] overflow-hidden flex items-center justify-center shrink-0"
-                style={{
-                  width: "100%",
-                  maxWidth: 560,
-                  height: 420,
-                  background: detail.whiteCard ? "#ffffff" : undefined,
-                  backgroundImage: detail.whiteCard ? undefined : `url(${detail.bg})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
-              >
-                <img
-                  src={detail.cover}
-                  alt={detail.title}
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            )}
-
-            <div className="flex-1 flex flex-col gap-5 justify-between">
-              <div className="flex flex-col gap-3">
-                <p
-                  className="font-display"
-                  style={{ fontSize: "22px", lineHeight: 1.5, color: "var(--foreground)" }}
-                >
-                  {detail.description}
-                </p>
-                {detail.note ? (
-                  <p className="font-display" style={{ fontSize: "16px", color: "var(--foreground)" }}>
-                    {detail.note}
-                  </p>
-                ) : null}
-                {detail.noteRed ? (
-                  <p
-                    className="font-display bg-white px-2.5 py-0.5 rounded"
-                    style={{ fontSize: "12px", color: "#ce1124" }}
-                  >
-                    {detail.noteRed}
-                  </p>
-                ) : null}
-              </div>
-              <div className="flex flex-wrap gap-[10px]">
-                {detail.actions.map((a) => (
-                  <Button key={a.label} variant={a.variant} href={a.href}>
-                    {a.label}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          </div>
+        <div className="g-cs-actions">
+          {detail.actions.map((a) => (
+            <Button key={a.label} variant={a.variant} href={a.href}>
+              {a.label}
+            </Button>
+          ))}
         </div>
 
         <div className="mt-16 flex justify-center">

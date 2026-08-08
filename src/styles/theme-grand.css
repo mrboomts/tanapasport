@@ -754,6 +754,672 @@
   margin: 0;
 }
 
+/* ---------- Experience: golden-spiral companion ----------
+   The timeline never fills a wide screen, so above 1280px the leftover
+   column gets the cat-and-shell drawing. Below that it is removed from
+   the DOM flow entirely — it is decoration, not content. */
+.g-exp-grid {
+  display: block;
+}
+
+.g-golden {
+  display: none;
+}
+
+@media (min-width: 1280px) {
+  .g-exp-grid {
+    display: grid;
+    /* Both columns are capped rather than sharing the row, and the row is
+       packed to the start — otherwise the cat gets pushed onto the right
+       margin on wide monitors while dead space opens up mid-row. */
+    grid-template-columns: minmax(0, 40rem) clamp(270px, 22vw, 340px);
+    justify-content: start;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: start;
+  }
+
+  .g-golden {
+    display: block;
+    position: sticky;
+    top: 9vh;
+  }
+}
+
+.g-golden-svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.g-golden-cap {
+  font-size: 10px;
+  letter-spacing: 0.26em;
+  fill: var(--g-gold);
+  opacity: 0.85;
+}
+
+.g-golden-phi {
+  font-family: var(--font-display);
+  font-size: 22px;
+  fill: var(--g-gold-lt);
+  opacity: 0;
+  animation: g-golden-phi-in 18s ease-in-out infinite;
+}
+
+.g-golden-spiral {
+  fill: none;
+  stroke: var(--g-gold-lt);
+  stroke-width: 1.8;
+  /* butt, not round: a round cap on the hidden dash still paints a half
+     disc, which left a stray dot at the spiral's outer end before the
+     unfurl had started. */
+  stroke-linecap: butt;
+  filter: drop-shadow(0 0 7px rgba(233, 200, 119, 0.35));
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+  animation: g-golden-draw 18s ease-in-out infinite;
+}
+
+.g-golden-shell-body {
+  fill: rgba(233, 200, 119, 0.1);
+  stroke: var(--g-gold-lt);
+  stroke-width: 1.7;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.g-golden-shell-ribs {
+  fill: none;
+  stroke: rgba(247, 226, 168, 0.55);
+  stroke-width: 1;
+  stroke-linecap: round;
+}
+
+.g-golden-shell-glow {
+  fill: rgba(233, 200, 119, 0.07);
+  stroke: rgba(233, 200, 119, 0.3);
+  stroke-width: 0.9;
+}
+
+.g-golden-shell {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: g-golden-shell-life 18s ease-in-out infinite;
+}
+
+/* ---- cat ---- */
+.g-golden-catmove {
+  animation: g-cat-travel 18s ease-in-out infinite;
+}
+
+.g-golden-catface {
+  transform-origin: 176.9px 500px;
+  animation: g-cat-face 18s steps(1, end) infinite;
+}
+
+.g-golden-cathop {
+  transform-origin: 176.9px 585px;
+  animation: g-cat-hop 18s cubic-bezier(0.3, 0, 0.5, 1) infinite;
+}
+
+.g-golden-catmove image {
+  /* the artwork is a cool white; a touch of sepia settles it into the
+     gold-on-ink palette without repainting it */
+  filter: sepia(0.26) saturate(1.12) brightness(0.97)
+    drop-shadow(0 0 10px rgba(233, 200, 119, 0.16));
+}
+
+.g-golden-cat-shadow {
+  /* a dark shadow is invisible on a near-black ground, so the contact
+     is read as a pool of warm light instead */
+  fill: rgba(233, 200, 119, 0.22);
+  filter: blur(7px);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: g-cat-shadow 18s cubic-bezier(0.3, 0, 0.5, 1) infinite;
+}
+
+/* --- sprite gating. Hard cuts, as sprite animation wants. --- */
+.g-cat-sit { animation: g-cat-pose-sit 18s steps(1, end) infinite; }
+.g-cat-run { animation: g-cat-pose-run 18s steps(1, end) infinite; }
+.g-cat-hoppose { animation: g-cat-pose-hop 18s steps(1, end) infinite; }
+.g-cat-swipe { animation: g-cat-pose-swipe 18s steps(1, end) infinite; }
+
+/* the run cycle itself, nested inside the gate so the opacities multiply */
+.g-cat-frame-a { animation: g-cat-frame-a 0.3s steps(1, end) infinite; }
+.g-cat-frame-b { animation: g-cat-frame-b 0.3s steps(1, end) infinite; }
+
+@keyframes g-cat-frame-a { 0% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes g-cat-frame-b { 0% { opacity: 0; } 50%, 100% { opacity: 1; } }
+
+@keyframes g-cat-pose-sit {
+  0% { opacity: 1; }
+  4% { opacity: 0; }
+  24% { opacity: 1; }
+  28% { opacity: 0; }
+  36% { opacity: 1; }
+  40% { opacity: 0; }
+  52%, 100% { opacity: 1; }
+}
+
+@keyframes g-cat-pose-run {
+  0% { opacity: 0; }
+  4% { opacity: 1; }
+  24%, 100% { opacity: 0; }
+}
+
+@keyframes g-cat-pose-hop {
+  0% { opacity: 0; }
+  28% { opacity: 1; }
+  36%, 100% { opacity: 0; }
+}
+
+@keyframes g-cat-pose-swipe {
+  0% { opacity: 0; }
+  40% { opacity: 1; }
+  52%, 100% { opacity: 0; }
+}
+
+/* runs right, turns, runs back left to the shell */
+@keyframes g-cat-travel {
+  0%, 4% { transform: translateX(-30px); }
+  14% { transform: translateX(48px); }
+  24% { transform: translateX(4px); }
+  100% { transform: translateX(4px); }
+}
+
+/* flipped only while heading right */
+@keyframes g-cat-face {
+  0% { transform: scaleX(1); }
+  4% { transform: scaleX(-1); }
+  14%, 100% { transform: scaleX(1); }
+}
+
+/* the play hop, then two little pushes at the shell */
+@keyframes g-cat-hop {
+  0%, 28% { transform: translateY(0) scale(1, 1); }
+  29% { transform: translateY(0) scale(1.07, 0.92); }
+  30.5% { transform: translateY(-58px) scale(0.95, 1.07); }
+  31.8% { transform: translateY(-76px) scale(0.96, 1.05); }
+  33.2% { transform: translateY(-40px) scale(0.98, 1.02); }
+  34.5% { transform: translateY(0) scale(1.08, 0.9); }
+  36%, 42% { transform: translateY(0) scale(1, 1); }
+  43.5% { transform: translateY(-9px) scale(0.99, 1.03); }
+  45% { transform: translateY(0) scale(1.02, 0.98); }
+  48% { transform: translateY(-9px) scale(0.99, 1.03); }
+  49.5% { transform: translateY(0) scale(1.02, 0.98); }
+  51%, 100% { transform: translateY(0) scale(1, 1); }
+}
+
+/* the pool reads the height: small and faint in the air, wide on impact */
+@keyframes g-cat-shadow {
+  0%, 28% { transform: scale(1, 1); opacity: 0.5; }
+  29% { transform: scale(1.12, 1); opacity: 0.56; }
+  31.8% { transform: scale(0.52, 0.52); opacity: 0.16; }
+  34.5% { transform: scale(1.14, 1); opacity: 0.58; }
+  36%, 42% { transform: scale(1, 1); opacity: 0.5; }
+  43.5% { transform: scale(0.9, 0.9); opacity: 0.42; }
+  45% { transform: scale(1.04, 1); opacity: 0.52; }
+  48% { transform: scale(0.9, 0.9); opacity: 0.42; }
+  49.5% { transform: scale(1.04, 1); opacity: 0.52; }
+  51%, 100% { transform: scale(1, 1); opacity: 0.5; }
+}
+
+/* the shell rides out the two swipes, then opens out and is gone */
+@keyframes g-golden-shell-life {
+  0%, 43% { opacity: 1; transform: scale(1) rotate(0deg); }
+  44.5% { transform: scale(1) rotate(-17deg); }
+  46.5% { transform: scale(1) rotate(11deg); }
+  48% { transform: scale(1) rotate(0deg); }
+  49% { transform: scale(1) rotate(15deg); }
+  50.5% { transform: scale(1) rotate(-8deg); }
+  52% { opacity: 1; transform: scale(1) rotate(0deg); }
+  60% { opacity: 0; transform: scale(2.6) rotate(26deg); }
+  94% { opacity: 0; transform: scale(2.6) rotate(26deg); }
+  98%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+@keyframes g-golden-draw {
+  0%, 52% { stroke-dashoffset: 1; opacity: 1; }
+  80% { stroke-dashoffset: 0; opacity: 1; }
+  93% { stroke-dashoffset: 0; opacity: 1; }
+  97%, 100% { stroke-dashoffset: 0; opacity: 0; }
+}
+
+@keyframes g-golden-phi-in {
+  0%, 78% { opacity: 0; }
+  85%, 92% { opacity: 1; }
+  96%, 100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .g-golden-spiral,
+  .g-golden-phi,
+  .g-golden-catmove,
+  .g-golden-catface,
+  .g-golden-cathop,
+  .g-golden-cat-shadow,
+  .g-cat-sit,
+  .g-cat-run,
+  .g-cat-frame-a,
+  .g-cat-frame-b,
+  .g-cat-hoppose,
+  .g-cat-swipe {
+    animation: none;
+    transform: none;
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+
+  /* one still frame: the cat sitting, the spiral open */
+  .g-cat-run,
+  .g-cat-hoppose,
+  .g-cat-swipe,
+  .g-golden-shell {
+    opacity: 0;
+  }
+
+  .g-golden-cat-shadow {
+    opacity: 0.5;
+  }
+}
+
+/* the page chrome stands down while a project detail is open */
+body[data-modal-open="true"] .g-rail,
+body[data-modal-open="true"] .g-topbar,
+body[data-modal-open="true"] .g-cursor,
+body[data-modal-open="true"] .g-progress,
+body[data-modal-open="true"] .g-cta-float {
+  display: none;
+}
+
+/* ---------- Case study (long-form project detail) ---------- */
+.g-cs {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.5rem, 6vw, 4.5rem);
+}
+
+.g-cs-head .g-eyebrow {
+  margin-bottom: 1.25rem;
+}
+
+.g-cs-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5.5vw, 4rem);
+  line-height: 1.05;
+  font-weight: 700;
+  margin: 0;
+  background: var(--g-gold-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* the gradient clip crops descenders without a little room below */
+  padding-bottom: 0.08em;
+}
+
+.g-cs-sub {
+  margin: 0.85rem 0 0;
+  max-width: 46rem;
+  font-size: clamp(1rem, 1.8vw, 1.35rem);
+  line-height: 1.55;
+  color: rgba(244, 241, 232, 0.82);
+}
+
+.g-cs-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1.5rem 2rem;
+  margin: 0;
+  padding: 1.75rem 0;
+  border-top: 1px solid var(--g-hair);
+  border-bottom: 1px solid var(--g-hair);
+}
+
+.g-cs-meta dt {
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--g-gold);
+  margin-bottom: 0.5rem;
+}
+
+.g-cs-meta dd {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--g-ivory);
+}
+
+.g-cs-body {
+  display: grid;
+  gap: clamp(2rem, 5vw, 4rem);
+}
+
+@media (min-width: 900px) {
+  .g-cs-body {
+    grid-template-columns: 1.15fr 1fr;
+  }
+
+  .g-cs-body[data-single="true"] {
+    grid-template-columns: minmax(0, 46rem);
+  }
+}
+
+.g-cs-h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 2.4vw, 1.6rem);
+  font-weight: 700;
+  color: var(--g-gold-lt);
+  margin: 0 0 1rem;
+}
+
+.g-cs-copy {
+  margin: 0;
+  font-size: clamp(0.95rem, 1.4vw, 1.05rem);
+  line-height: 1.85;
+  color: rgba(244, 241, 232, 0.8);
+}
+
+.g-cs-note {
+  margin: 1rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--g-muted);
+}
+
+.g-cs-note--warn {
+  color: #f0a3ad;
+}
+
+.g-cs-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.g-cs-list li {
+  position: relative;
+  padding-left: 1.5rem;
+  font-size: clamp(0.9rem, 1.35vw, 1rem);
+  line-height: 1.7;
+  color: rgba(244, 241, 232, 0.8);
+}
+
+.g-cs-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--g-gold);
+  box-shadow: 0 0 0 4px rgba(233, 200, 119, 0.12);
+}
+
+.g-cs-screens {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(3rem, 7vw, 5.5rem);
+}
+
+.g-cs-group {
+  margin-bottom: clamp(1.5rem, 3vw, 2.25rem);
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--g-hair);
+}
+
+/* Screens sit beside their caption and alternate sides, rather than
+   stacking full-bleed. Below 900px the frame goes back on top. */
+.g-cs-screen {
+  display: grid;
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+  align-items: center;
+  margin: 0;
+}
+
+@media (min-width: 900px) {
+  .g-cs-screen {
+    grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+  }
+
+  /* handsets are narrow; give the words the room instead */
+  .g-cs-screen[data-frame="phone"] {
+    grid-template-columns: minmax(0, 0.72fr) minmax(0, 1fr);
+  }
+
+  .g-cs-screen[data-side="right"] .g-cs-media {
+    order: 2;
+  }
+}
+
+.g-cs-media {
+  min-width: 0;
+}
+
+.g-cs-hero {
+  /* an explicit width, because `margin: auto` on a column flex item drops
+     it out of stretch and back onto its content size — which is zero once
+     the screen inside is size-contained */
+  width: 100%;
+  max-width: 980px;
+  margin-inline: auto;
+}
+
+.g-cs-hero[data-frame="phone"] {
+  max-width: 320px;
+}
+
+.g-cs-cap {
+  min-width: 0;
+}
+
+.g-cs-fignum {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  font-variant-numeric: tabular-nums;
+  color: var(--g-gold);
+  margin-bottom: 0.6rem;
+}
+
+.g-cs-caph {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
+  line-height: 1.25;
+  font-weight: 700;
+  color: var(--g-ivory);
+  margin: 0;
+}
+
+.g-cs-capp {
+  margin: 0.75rem 0 0;
+  font-size: clamp(0.85rem, 1.3vw, 0.95rem);
+  line-height: 1.8;
+  color: rgba(244, 241, 232, 0.72);
+}
+
+/* ---- device frames ---- */
+.g-plain,
+.g-win {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(233, 200, 119, 0.3);
+  background: rgba(255, 255, 255, 0.04);
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.45);
+}
+
+.g-plain img,
+.g-win img,
+.g-mac img,
+.g-phone img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* A device screen has a fixed shape; a long capture cannot be allowed to
+   stretch it. Each viewport holds the real aspect ratio and pans the shot
+   inside it instead.
+   `container-type: size` makes 100cqh the viewport's own height, so
+   `-100% + 100cqh` is exactly the overflow — and min() clamps it to zero
+   for shots that already fit, which is why this needs no per-image flag. */
+.g-mac-screen,
+.g-win-view,
+.g-phone-screen {
+  container-type: size;
+  overflow: hidden;
+}
+
+.g-mac-screen,
+.g-win-view {
+  aspect-ratio: 16 / 10;
+}
+
+.g-phone-screen {
+  aspect-ratio: 9 / 19.5;
+}
+
+.g-mac-screen img,
+.g-win-view img,
+.g-phone-screen img {
+  animation: g-shot-pan 16s cubic-bezier(0.5, 0, 0.5, 1) infinite alternate;
+}
+
+/* stagger them so a page of screens does not pan in lockstep */
+.g-cs-screen:nth-child(2n) .g-win-view img,
+.g-cs-screen:nth-child(2n) .g-mac-screen img {
+  animation-duration: 19s;
+  animation-delay: -4s;
+}
+
+@keyframes g-shot-pan {
+  0%, 10% {
+    transform: translateY(0);
+  }
+  90%, 100% {
+    transform: translateY(min(0px, calc(-100% + 100cqh)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .g-mac-screen img,
+  .g-win-view img,
+  .g-phone-screen img {
+    animation: none;
+  }
+}
+
+/* a window for raw UI captures that came without any chrome */
+.g-win-bar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid var(--g-hair);
+}
+
+.g-win-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(244, 241, 232, 0.28);
+  flex: none;
+}
+
+.g-win-url {
+  flex: 1;
+  height: 16px;
+  margin-left: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+/* Laptop and handset shells. The device greys have to sit clear of a
+   near-black page, so they are lifted well above the background and each
+   carries a gold hairline rim — a true dark bezel just disappeared. */
+.g-mac {
+  /* the base is wider than the lid, as on the real thing — inset the lid
+     rather than letting the base hang outside and overflow the column */
+  padding-inline: 5%;
+}
+
+.g-mac-lid {
+  border: 10px solid #3a3846;
+  border-bottom-width: 12px;
+  border-radius: 16px;
+  background: #3a3846;
+  box-shadow:
+    inset 0 0 0 1px rgba(233, 200, 119, 0.22),
+    0 0 0 1px rgba(233, 200, 119, 0.3),
+    0 30px 70px rgba(0, 0, 0, 0.5);
+}
+
+.g-mac-screen {
+  border-radius: 7px;
+  overflow: hidden;
+  background: #0a0912;
+}
+
+.g-mac-base {
+  position: relative;
+  height: 12px;
+  margin-inline: -5%;
+  border-radius: 0 0 10px 10px;
+  background: linear-gradient(180deg, #4a4857 0%, #2a2934 100%);
+  box-shadow:
+    0 0 0 1px rgba(233, 200, 119, 0.24),
+    0 14px 26px rgba(0, 0, 0, 0.45);
+}
+
+.g-mac-notch {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 14%;
+  height: 5px;
+  transform: translateX(-50%);
+  border-radius: 0 0 6px 6px;
+  background: #1b1a22;
+}
+
+/* handset */
+.g-phone {
+  width: 100%;
+  max-width: 300px;
+  margin-inline: auto;
+  padding: 8px;
+  border-radius: 34px;
+  background: linear-gradient(160deg, #4e4c5c 0%, #2a2934 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(233, 200, 119, 0.2),
+    0 0 0 1px rgba(233, 200, 119, 0.3),
+    0 26px 60px rgba(0, 0, 0, 0.5);
+}
+
+.g-phone-screen {
+  border-radius: 27px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.g-cs-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: clamp(2.5rem, 6vw, 4rem);
+  padding-top: clamp(2rem, 4vw, 3rem);
+  border-top: 1px solid var(--g-hair);
+}
+
+
 /* ---------- Project index ---------- */
 .g-index {
   border-top: 1px solid var(--g-hair);

@@ -4,3 +4,12 @@ dist
 *.log
 .vite
 .claude
+
+# Full-resolution capture sources — the web-sized derivatives that the app
+# actually imports live in src/imports/CaseStudies. Keeping the originals
+# out matters: a 44 MB push has already failed on this remote once.
+src/imports/One Bangkok/Create Location*.jpg
+src/imports/One Bangkok/Frame *.png
+src/imports/One Bangkok/image *.png
+src/imports/One Bangkok/Screenshot *.png
+src/imports/amarin/nectar-navy-*.png
