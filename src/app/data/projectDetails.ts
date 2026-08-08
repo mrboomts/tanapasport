@@ -114,6 +114,41 @@ export type ProjectDetail = {
 };
 
 /**
+ * One gold button per project, and a fixed order for the ones that repeat
+ * across projects.
+ *
+ * Several projects grew a second and third primary as buttons were added
+ * — Krispy Kreme had three — which leaves nothing looking like the main
+ * action. So: "View more info" leads, then any prototype, then everything
+ * else in the order it was written; the first button takes the gold and
+ * every other primary steps down to secondary.
+ *
+ * A project with no primary at all is left alone: the store buttons on
+ * Just super app carry their own colours and are not a hierarchy problem.
+ */
+function rank(label: string): number {
+  // the destination itself leads: a live site where there is one, the
+  // write-up where there is not. The two never appear on the same project.
+  if (/^visit website/i.test(label) || /^view more info/i.test(label)) return 0;
+  if (/prototype/i.test(label)) return 1;
+  return 2;
+}
+
+export function orderedActions(actions: Action[]): Action[] {
+  const sorted = actions
+    .map((action, i) => ({ action, i }))
+    .sort((a, b) => rank(a.action.label) - rank(b.action.label) || a.i - b.i)
+    .map((x) => x.action);
+
+  if (!sorted.some((a) => a.variant === "primary")) return sorted;
+
+  return sorted.map((action, i) => {
+    if (i === 0) return { ...action, variant: "primary" as const };
+    return action.variant === "primary" ? { ...action, variant: "secondary" as const } : action;
+  });
+}
+
+/**
  * Every project gets the case-study layout. Where one has not been written
  * by hand, this synthesises the least it needs from the index data: the
  * meta strip and whatever cover artwork exists, with the captions left

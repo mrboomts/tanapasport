@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { motion } from "motion/react";
-import { buildStudy, type ProjectDetail } from "../data/projectDetails";
+import { buildStudy, orderedActions, type ProjectDetail } from "../data/projectDetails";
 import { Button } from "./ds/Button";
 import { CaseStudy } from "./CaseStudy";
 
@@ -62,7 +62,7 @@ export function ProjectModal({
         />
 
         <div className="g-cs-actions">
-          {detail.actions.map((a) => (
+          {orderedActions(detail.actions).map((a) => (
             <Button key={a.label} variant={a.variant} href={a.href}>
               {a.label}
             </Button>
