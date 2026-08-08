@@ -87,6 +87,13 @@ export type Screenshot = {
  */
 export type CaseStudy = {
   subtitle?: string;
+  /**
+   * "pair" drops the hero/alternating rhythm and lays every screen out at
+   * one size — side by side on a wide screen, stacked on a narrow one.
+   * It is what a project wants when its artwork is a set of equals rather
+   * than a lead shot plus supporting ones.
+   */
+  layout?: "pair";
   meta: { label: string; value: string }[];
   highlights?: string[];
   screens: Screenshot[];
@@ -146,7 +153,7 @@ export function buildStudy(title: string, detail: ProjectDetail): CaseStudy {
       bg: detail.whiteCard ? undefined : detail.bg,
     }));
 
-  return { meta, screens };
+  return { meta, screens, layout: screens.length > 1 ? "pair" : undefined };
 }
 
 export const projectDetails: Record<string, ProjectDetail> = {

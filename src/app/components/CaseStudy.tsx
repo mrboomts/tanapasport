@@ -85,7 +85,8 @@ export function CaseStudy({
   note?: string;
   noteRed?: string;
 }) {
-  const [hero, ...rest] = study.screens;
+  const pair = study.layout === "pair";
+  const [hero, ...rest] = pair ? [undefined, ...study.screens] : study.screens;
 
   return (
     <div className="g-cs">
@@ -113,6 +114,17 @@ export function CaseStudy({
         </div>
       ) : null}
 
+      {pair ? (
+        <div className="g-cs-pair">
+          {study.screens.map((shot) => (
+            <figure key={shot.src} className="g-cs-pairitem">
+              <Framed src={shot.src} caption={shot.caption} frame={shot.frame} />
+              {shot.caption ? <figcaption className="g-cs-caph">{shot.caption}</figcaption> : null}
+            </figure>
+          ))}
+        </div>
+      ) : null}
+
       <div className="g-cs-body" data-single={!study.highlights?.length}>
         <div>
           <h2 className="g-cs-h2">Overview</h2>
@@ -133,7 +145,7 @@ export function CaseStudy({
         ) : null}
       </div>
 
-      {rest.length ? (
+      {!pair && rest.length ? (
         <section className="g-cs-screens">
           {rest.map((shot, i) => (
             <div key={shot.src}>

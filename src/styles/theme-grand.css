@@ -769,11 +769,11 @@
 @media (min-width: 1280px) {
   .g-exp-grid {
     display: grid;
-    /* Both columns are capped rather than sharing the row, and the row is
-       packed to the start — otherwise the cat gets pushed onto the right
-       margin on wide monitors while dead space opens up mid-row. */
-    grid-template-columns: minmax(0, 40rem) clamp(270px, 22vw, 340px);
-    justify-content: start;
+    /* The timeline is capped at its comfortable measure and the cat takes
+       whatever is left, centred inside it. Letting the cat column be 1fr
+       pinned it to the right margin; packing the row to the start dumped
+       it against the text. Centring in the remainder is the balance. */
+    grid-template-columns: minmax(0, 40rem) minmax(0, 1fr);
     gap: clamp(1.5rem, 3vw, 3rem);
     align-items: start;
   }
@@ -782,6 +782,9 @@
     display: block;
     position: sticky;
     top: 9vh;
+    /* the column is the leftover space; the drawing sits centred in it */
+    width: clamp(260px, 20vw, 350px);
+    margin-inline: auto;
   }
 }
 
@@ -1216,6 +1219,40 @@ body[data-modal-open="true"] .g-cta-float {
 
 .g-cs-cap {
   min-width: 0;
+}
+
+/* equals, side by side on a wide screen and stacked on a narrow one. A
+   shared aspect ratio is what makes them read as one size, since the
+   source artwork is never pixel-identical. */
+.g-cs-pair {
+  display: grid;
+  gap: clamp(1.25rem, 3vw, 2rem);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 900px) {
+  .g-cs-pair {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.g-cs-pairitem {
+  margin: 0;
+  min-width: 0;
+}
+
+.g-cs-pairitem .g-plain {
+  aspect-ratio: 4 / 3;
+}
+
+.g-cs-pairitem .g-plain img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.g-cs-pairitem figcaption {
+  margin-top: 0.75rem;
 }
 
 .g-cs-fignum {
