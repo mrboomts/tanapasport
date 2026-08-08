@@ -754,6 +754,12 @@ export const projectDetails: Record<string, ProjectDetail> = {
         "Spare-part receiving reconciled against shipment number, tax invoice and logistics company",
         "Accounts receivable — bill placement letters — tracked from waiting to received to cancelled",
       ],
+      problem: {
+        before:
+          "Dealership staff worked across separate tools for each job — a customer's history in one place, vehicle stock in another, spare-part deliveries and billing tracked by hand or in spreadsheets — with no shared view of where anything stood.",
+        after:
+          "Dealer Vision brings CRM, stock, spare parts and accounting into one system: a customer's profile carries their full vehicle history, every stock transfer between branches shows its status end to end, incoming parts are reconciled against the shipment before they're accepted, and bill placement letters are tracked from waiting to received without leaving the module.",
+      },
       screens: [
         {
           src: dvLogin,
@@ -823,6 +829,12 @@ export const projectDetails: Record<string, ProjectDetail> = {
         "Collateral records tied to a contract, with itemised charges and running balances",
         "Payment receipt handling grace periods, waivers and a running settlement summary",
       ],
+      problem: {
+        before:
+          "Running hire-purchase and collateral lending day to day meant working across disconnected records — branch details, debtor notices, collateral items and payment settlements each tracked on their own, with nothing tying a contract's full picture together.",
+        after:
+          "H-Meter ties it into one system: branches, overdue notices, collateral records and payment receipts all reference the same contract, with grace periods, waivers and running balances handled in the same screen an officer is already working in.",
+      },
       screens: [
         {
           src: hmDashboard,
