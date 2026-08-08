@@ -24,7 +24,7 @@ export const profile = {
   about:
     "I'm Tanapas Suppamongkol, known as Boom. I graduated from Kasetsart University with a major in Operations Management from the Faculty of Business Administration. After graduation, I worked for approximately 5 years in the banking sector, serving as a Relationship Officer and Assistant Relationship Manager (Credit Analyst).\n\nIn today's world, where smartphones have integrated into our daily lives, I continually find myself questioning the design of applications and websites. As time progressed, I discovered the career field of \"UX/UI Design\" and recognized the growth opportunities within it, then I decided on a learning journey, ultimately leading to a successful career transition from banker to UX/UI Designer.",
   skills: [
-    "AI","Claude","Vercel","Supabase","Git","Midjourney","Suno","ChatGPT","Gemini","Grok",
+    "AI","Claude","Vercel","Supabase","Git","Midjourney","Lovable","Suno","ChatGPT","Gemini","Grok",
     "Figma","Adobe XD","Adobe Illustrator","Adobe Photoshop",
     "Affinity Designer","Affinity Photo","Prototype","Wireframes","User flow",
     "User journey","Persona","HTML","CSS","Javascript","SCSS","Bootstrap",
@@ -49,7 +49,7 @@ export const skillGroups = [
   },
   {
     label: "AI",
-    items: ["Claude", "ChatGPT", "Gemini", "Grok", "Midjourney", "Suno", "Vibe coding"],
+    items: ["Claude", "ChatGPT", "Gemini", "Grok", "Midjourney", "Lovable", "Suno", "Vibe coding"],
   },
   {
     label: "Growth & analysis",

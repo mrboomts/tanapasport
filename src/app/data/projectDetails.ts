@@ -392,7 +392,7 @@ export const projectDetails: Record<string, ProjectDetail> = {
     description:
       "Just Invest is the landing page website of the Just Fin app.\nThis website shows the initial information of the app and a link to download the app.",
     note: "* Just Invest is the old name of Just Fin due to the financial services law of Thailand, The company will change it later.",
-    actions: [{ label: "Go to the site", href: "https://justfin.co.th/", variant: "primary" }],
+    actions: [{ label: "Visit website", href: "https://justfin.co.th/", variant: "primary" }],
   },
   "Just service": {
     title: "Just Service",
@@ -463,7 +463,7 @@ export const projectDetails: Record<string, ProjectDetail> = {
       "Dealer Vision is a dealer management system for automotive dealerships, covering stock, spare parts, and various after-sales services. Its key clients include Hino Thailand, Nissan Thailand, Suzuki Thailand, and Ford Thailand.",
     actions: [
       {
-        label: "Visit site",
+        label: "Visit website",
         href: "https://seniorcom.club/DealerVisionStandardGateway/Frontend/Identity/Login",
         variant: "primary",
       },
@@ -481,7 +481,7 @@ export const projectDetails: Record<string, ProjectDetail> = {
     description:
       "H-Meter is a credit management system for various types of credit companies. Its clients include Srisawad Capital, Worldlease, and ECL Auto Cash.",
     actions: [
-      { label: "Visit site", href: "https://seniorcom.club/standardnewpayment", variant: "primary" },
+      { label: "Visit website", href: "https://seniorcom.club/standardnewpayment", variant: "primary" },
     ],
   },
   "PDPA Manager - Amarin": {
@@ -493,7 +493,7 @@ export const projectDetails: Record<string, ProjectDetail> = {
     noteRed: "* This project is still under negotiation regarding pricing and timeline.",
     actions: [
       {
-        label: "Visit site",
+        label: "Visit website",
         href: "https://www.figma.com/make/WqdS2wWt3NRFC9YdpLNxFR/PDPA-File-Management-Features--Copy-?p=f&t=omyucMblZwmTXeJ6-0",
         variant: "primary",
       },
@@ -506,7 +506,7 @@ export const projectDetails: Record<string, ProjectDetail> = {
     description:
       "1truth is a website about the universe's truths — everything about the cosmos and existence that humans should know.",
     noteRed: "* Please read the terms and consider your readiness before viewing.",
-    actions: [{ label: "Visit site", href: "https://1truth.io", variant: "primary" }],
+    actions: [{ label: "Visit website", href: "https://1truth.io", variant: "primary" }],
   },
   "SAS Card game": {
     title: "Soul & Spell",
