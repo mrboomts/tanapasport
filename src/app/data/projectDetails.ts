@@ -106,6 +106,12 @@ export type CaseStudy = {
   layout?: "pair";
   meta: { label: string; value: string }[];
   highlights?: string[];
+  /**
+   * The user problem this project's design was built to solve — distinct
+   * from `highlights`, which lists what the system does. Only set where
+   * there's an actual before/after to point to, not a guess at one.
+   */
+  problem?: { before: string; after: string };
   screens: Screenshot[];
 };
 
@@ -573,6 +579,12 @@ export const projectDetails: Record<string, ProjectDetail> = {
         "User flows mapped on a FigJam board before any UI was drawn",
         "A Figma design system covering components, tokens and states",
       ],
+      problem: {
+        before:
+          "A producer who wanted to sell their own generated power back into the grid had no way to check where their paperwork stood. The only options were to call and ask, or turn up in person without knowing when their turn would come.",
+        after:
+          "A booking screen shows which dates are open, and a table tracks every document as it's submitted — applicants see exactly what's still missing, without calling to ask.",
+      },
       screens: [
         {
           src: peaLogin,
@@ -636,6 +648,12 @@ export const projectDetails: Record<string, ProjectDetail> = {
         "Per-node hours that inherit from the parent location or override it",
         "UI adjustments to the map menu in the One Bangkok app itself",
       ],
+      problem: {
+        before:
+          "The team managed the project's map and location data on a third-party platform — an ongoing subscription cost, with a UI that wasn't built around how the team actually worked.",
+        after:
+          "Log Pose replaces it outright: no more subscription fees, and the UI and flow are built for the team's own workflow — layered special hours, date-ranged location states, and per-node hours that can inherit or break away — faster and easier to use than what it replaced.",
+      },
       screens: [
         {
           src: obLocation,
@@ -862,6 +880,12 @@ export const projectDetails: Record<string, ProjectDetail> = {
         "Data-store locations plotted on a map of Thailand, grouped by region",
         "Light and dark themes across the whole system",
       ],
+      problem: {
+        before:
+          "Knowing which personal-data files were approaching their PDPA retention deadline meant either memorising it or opening files one by one to check dates — easy to miss once there are hundreds of them.",
+        after:
+          "A calendar brings every file's expiry date into one place, and files nearing their deadline flag themselves in the file table automatically — no more opening each one to check.",
+      },
       screens: [
         {
           src: amDashboard,

@@ -1164,6 +1164,64 @@ body[data-modal-open="true"] .g-cta-float {
   box-shadow: 0 0 0 4px rgba(233, 200, 119, 0.12);
 }
 
+/* Before/after: the user problem a project's design was built to solve,
+   set apart from the plain-prose Overview and the bulleted feature list
+   in "What it does". Two cells rather than an arrow-linked pair, because
+   a couple of these read long — a single flowing sentence with an arrow
+   between them fights wrapping on anything but a wide screen. */
+.g-cs-problem {
+  border-top: 1px solid var(--g-hair);
+  border-bottom: 1px solid var(--g-hair);
+  padding: clamp(2rem, 4vw, 3rem) 0;
+}
+
+.g-cs-problem-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 700px) {
+  .g-cs-problem-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+  }
+}
+
+.g-cs-problem-cell {
+  padding: 1.5rem clamp(1.25rem, 2.5vw, 1.75rem);
+  border-radius: 14px;
+  border: 1px solid var(--g-hair);
+}
+
+.g-cs-problem-cell[data-when="before"] {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.g-cs-problem-cell[data-when="after"] {
+  background: rgba(233, 200, 119, 0.07);
+  border-color: rgba(233, 200, 119, 0.28);
+}
+
+.g-cs-problem-tag {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  margin-bottom: 0.85rem;
+  color: var(--g-muted);
+}
+
+.g-cs-problem-cell[data-when="after"] .g-cs-problem-tag {
+  color: var(--g-gold);
+}
+
+.g-cs-problem-cell p {
+  margin: 0;
+  font-size: clamp(0.92rem, 1.35vw, 1rem);
+  line-height: 1.75;
+  color: rgba(244, 241, 232, 0.85);
+}
+
 .g-cs-screens {
   display: flex;
   flex-direction: column;

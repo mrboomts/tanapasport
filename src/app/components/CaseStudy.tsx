@@ -145,6 +145,22 @@ export function CaseStudy({
         ) : null}
       </div>
 
+      {study.problem ? (
+        <section className="g-cs-problem">
+          <h2 className="g-cs-h2">The problem it solves</h2>
+          <div className="g-cs-problem-grid">
+            <div className="g-cs-problem-cell" data-when="before">
+              <span className="g-cs-problem-tag">Before</span>
+              <p>{study.problem.before}</p>
+            </div>
+            <div className="g-cs-problem-cell" data-when="after">
+              <span className="g-cs-problem-tag">After</span>
+              <p>{study.problem.after}</p>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
       {!pair && rest.length ? (
         <section className="g-cs-screens">
           {rest.map((shot, i) => (
