@@ -719,7 +719,7 @@ export const projectDetails: Record<string, ProjectDetail> = {
         "An all-in-one dealer management system running dealerships for Hino, Nissan, Suzuki and Ford Thailand",
       meta: [
         { label: "Role", value: "UX/UI Designer" },
-        { label: "Client", value: "SeniorCom" },
+        { label: "Client", value: "Hino, Nissan, Suzuki, Ford Thailand" },
         { label: "At", value: "SeniorCom" },
         { label: "Period", value: "Jan.2024 - Mar.2025" },
         { label: "Platform", value: "Responsive website" },
