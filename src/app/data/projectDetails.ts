@@ -50,6 +50,11 @@ import amDashboardDark from "../../imports/CaseStudies/am-dashboard-dark.webp";
 import amExpiry from "../../imports/CaseStudies/am-expiry.webp";
 import amConsent from "../../imports/CaseStudies/am-consent.webp";
 import amFiles from "../../imports/CaseStudies/am-files.webp";
+import dvLogin from "../../imports/CaseStudies/dv-login.webp";
+import dvCrm from "../../imports/CaseStudies/dv-crm.webp";
+import dvStockTransfer from "../../imports/CaseStudies/dv-stock-transfer.webp";
+import dvSparePart from "../../imports/CaseStudies/dv-spare-part.webp";
+import dvBilling from "../../imports/CaseStudies/dv-billing.webp";
 
 import { projectGroups, type Project } from "./portfolio";
 
@@ -709,6 +714,56 @@ export const projectDetails: Record<string, ProjectDetail> = {
     title: "Dealer Vision",
     bg: dealerVisionCover,
     cover: dealerVisionCover,
+    study: {
+      subtitle:
+        "An all-in-one dealer management system running dealerships for Hino, Nissan, Suzuki and Ford Thailand",
+      meta: [
+        { label: "Role", value: "UX/UI Designer" },
+        { label: "Client", value: "SeniorCom" },
+        { label: "At", value: "SeniorCom" },
+        { label: "Period", value: "Jan.2024 - Mar.2025" },
+        { label: "Platform", value: "Responsive website" },
+      ],
+      highlights: [
+        "Nine modules under one roof — CRM, Sales, Stock, Service, Spare parts, Accounting, Inspection and Master data",
+        "A customer profile that centres on the vehicle: notes, service history and complaints in one view",
+        "Vehicle stock transfers tracked between branches with a full status and cancellation trail",
+        "Spare-part receiving reconciled against shipment number, tax invoice and logistics company",
+        "Accounts receivable — bill placement letters — tracked from waiting to received to cancelled",
+      ],
+      screens: [
+        {
+          src: dvLogin,
+          caption: "Sign in",
+          frame: "mac",
+          note: "Google SSO or a username, plus the dealership's own call-centre details on the same screen for anyone locked out.",
+        },
+        {
+          src: dvCrm,
+          caption: "Customer profile",
+          frame: "browser",
+          note: "Search finds or creates a customer in one step; the profile that opens keeps vehicles, notes and a colour-coded activity feed together rather than behind separate tabs.",
+        },
+        {
+          src: dvStockTransfer,
+          caption: "Vehicle stock transfer",
+          frame: "browser",
+          note: "Every transfer between branches or parking areas, who moved it, and whether it completed, is still in transit, or was cancelled.",
+        },
+        {
+          src: dvSparePart,
+          caption: "Spare part receiving",
+          frame: "browser",
+          note: "Incoming shipments are matched against tax invoice, delivery note and logistics company before they are accepted into stock.",
+        },
+        {
+          src: dvBilling,
+          caption: "Bill placement letter",
+          frame: "browser",
+          note: "Accounts receivable for the dealership — amount, status and who cancelled it when one falls through.",
+        },
+      ],
+    },
     description:
       "Dealer Vision is a dealer management system for automotive dealerships, covering stock, spare parts, and various after-sales services. Its key clients include Hino Thailand, Nissan Thailand, Suzuki Thailand, and Ford Thailand.",
     actions: [
