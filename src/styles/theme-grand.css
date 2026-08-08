@@ -1301,16 +1301,20 @@ body[data-modal-open="true"] .g-cta-float {
   height: auto;
 }
 
-/* A device screen has a fixed shape; a long capture cannot be allowed to
-   stretch it. Each viewport holds the real aspect ratio and pans the shot
-   inside it instead.
-   `container-type: size` makes 100cqh the viewport's own height, so
-   `-100% + 100cqh` is exactly the overflow — and min() clamps it to zero
-   for shots that already fit, which is why this needs no per-image flag. */
+/* A device screen has a fixed shape; a capture of any other shape cannot
+   be allowed to stretch it. object-fit: cover fills the frame on both
+   axes regardless of the source's own aspect ratio — a wide screenshot
+   crops left/right, a tall one crops top/bottom — and panning
+   object-position through the crop is what reveals the rest of a tall
+   one. A wide screenshot has no vertical excess to pan, so the same
+   animation is simply a no-op on it: one rule that is correct for both,
+   rather than the previous transform math, which assumed every capture
+   would be at least as tall as the frame and left a blank gap under any
+   that was not (H-Meter's shots, at ~1.9:1, are wider than the 16:10
+   frame — panning had nothing to reveal because there was nothing to pan). */
 .g-mac-screen,
 .g-win-view,
 .g-phone-screen {
-  container-type: size;
   overflow: hidden;
 }
 
@@ -1326,6 +1330,10 @@ body[data-modal-open="true"] .g-cta-float {
 .g-mac-screen img,
 .g-win-view img,
 .g-phone-screen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 0%;
   animation: g-shot-pan 16s cubic-bezier(0.5, 0, 0.5, 1) infinite alternate;
 }
 
@@ -1338,10 +1346,10 @@ body[data-modal-open="true"] .g-cta-float {
 
 @keyframes g-shot-pan {
   0%, 10% {
-    transform: translateY(0);
+    object-position: 50% 0%;
   }
   90%, 100% {
-    transform: translateY(min(0px, calc(-100% + 100cqh)));
+    object-position: 50% 100%;
   }
 }
 

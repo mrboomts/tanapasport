@@ -55,6 +55,11 @@ import dvCrm from "../../imports/CaseStudies/dv-crm.webp";
 import dvStockTransfer from "../../imports/CaseStudies/dv-stock-transfer.webp";
 import dvSparePart from "../../imports/CaseStudies/dv-spare-part.webp";
 import dvBilling from "../../imports/CaseStudies/dv-billing.webp";
+import hmDashboard from "../../imports/CaseStudies/hm-dashboard.webp";
+import hmBranch from "../../imports/CaseStudies/hm-branch.webp";
+import hmDebtorNotice from "../../imports/CaseStudies/hm-debtor-notice.webp";
+import hmCollateral from "../../imports/CaseStudies/hm-collateral.webp";
+import hmPayment from "../../imports/CaseStudies/hm-payment.webp";
 
 import { projectGroups, type Project } from "./portfolio";
 
@@ -783,6 +788,56 @@ export const projectDetails: Record<string, ProjectDetail> = {
     title: "H-Meter",
     bg: hMeterCover,
     cover: hMeterCover,
+    study: {
+      subtitle:
+        "A credit management system running hire-purchase and collateral lending for Srisawad Capital, Worldlease and ECL Auto Cash",
+      meta: [
+        { label: "Role", value: "UX/UI Designer" },
+        { label: "Client", value: "Srisawad Capital, Worldlease, ECL Auto Cash" },
+        { label: "At", value: "SeniorCom" },
+        { label: "Period", value: "Jan.2024 - Mar.2025" },
+        { label: "Platform", value: "Responsive website" },
+      ],
+      highlights: [
+        "A dashboard summarising purchase requests, contracts pending sign-off and overdue debtors at a glance",
+        "Branch setup covering type, address, contact and status for every location",
+        "Overdue debtor notices generated and filtered by branch, date range and payment channel",
+        "Collateral records tied to a contract, with itemised charges and running balances",
+        "Payment receipt handling grace periods, waivers and a running settlement summary",
+      ],
+      screens: [
+        {
+          src: hmDashboard,
+          caption: "Dashboard",
+          frame: "mac",
+          note: "Purchase requests, contracts awaiting signature, overdue debtors and a receipts trend chart, all on one screen.",
+        },
+        {
+          src: hmBranch,
+          caption: "Branch setup",
+          frame: "browser",
+          note: "Every branch with its code, type, address and contact number, editable in place from the same list.",
+        },
+        {
+          src: hmDebtorNotice,
+          caption: "Overdue debtor notices",
+          frame: "browser",
+          note: "Notices filtered by branch and date range, generated as a letter, email or both.",
+        },
+        {
+          src: hmCollateral,
+          caption: "Collateral record",
+          frame: "browser",
+          note: "A single collateral item tied back to its contract, with itemised charges and the running balance due.",
+        },
+        {
+          src: hmPayment,
+          caption: "Payment receipt",
+          frame: "browser",
+          note: "Grace period, waiver and overdue detail sit next to the payment itself, so an officer clears an account without leaving the screen.",
+        },
+      ],
+    },
     description:
       "H-Meter is a credit management system for various types of credit companies. Its clients include Srisawad Capital, Worldlease, and ECL Auto Cash.",
     actions: [
