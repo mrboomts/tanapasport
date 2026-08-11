@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/react";
 import { GrandLayout } from "./grand/GrandLayout";
 
 /**
@@ -5,5 +6,10 @@ import { GrandLayout } from "./grand/GrandLayout";
  * on the `classic-theme` branch if it is ever needed again.
  */
 export default function App() {
-  return <GrandLayout />;
+  return (
+    <>
+      <GrandLayout />
+      <Analytics />
+    </>
+  );
 }
