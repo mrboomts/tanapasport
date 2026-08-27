@@ -61,21 +61,22 @@ function tabForTitle(title: string): TabKey {
   return "work";
 }
 
-const HASH_PREFIX = "#project-";
-
 export function GrandProjects() {
   const [active, setActive] = useState<string | null>(null);
   const [tab, setTab] = useState<TabKey>("work");
   const detail = active ? projectDetails[active] ?? null : null;
   const rows = buildRows(tab);
 
-  // Deep link: #project-<slug> opens straight to that card, on load and on
-  // back/forward. Nothing in the UI surfaces this — it exists so a URL (or
-  // a QR code built from one) can point straight at a specific project.
+  // Deep link: #<slug> opens straight to that card, on load and on
+  // back/forward. Bare (no "project-" prefix) so the link stays short —
+  // safe because every in-page section anchor is prefixed "g-" and no
+  // project title slugs to that. Nothing in the UI surfaces this — it
+  // exists so a URL (or a QR code built from one) can point straight at
+  // a specific project.
   useEffect(() => {
     const openFromHash = () => {
-      if (!location.hash.startsWith(HASH_PREFIX)) return;
-      const slug = location.hash.slice(HASH_PREFIX.length);
+      const slug = location.hash.slice(1);
+      if (!slug) return;
       const title = Object.keys(projectDetails).find((t) => projectSlug(t) === slug);
       if (!title) return;
       setTab(tabForTitle(title));
@@ -88,7 +89,7 @@ export function GrandProjects() {
 
   const open = (title: string) => {
     setActive(title);
-    history.replaceState(null, "", `${HASH_PREFIX}${projectSlug(title)}`);
+    history.replaceState(null, "", `#${projectSlug(title)}`);
   };
 
   const close = () => {
