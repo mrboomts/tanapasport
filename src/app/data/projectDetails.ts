@@ -194,6 +194,14 @@ export function orderedActions(actions: Action[]): Action[] {
   });
 }
 
+/** A project title as a URL-safe slug, for the #project-<slug> deep link. */
+export function projectSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 /**
  * Every project gets the case-study layout. Where one has not been written
  * by hand, this synthesises the least it needs from the index data: the

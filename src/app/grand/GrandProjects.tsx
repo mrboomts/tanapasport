@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { ArrowUpRight } from "lucide-react";
 import { projectGroups, type Project } from "../data/portfolio";
 import { images } from "../data/images";
-import { projectDetails } from "../data/projectDetails";
+import { projectDetails, projectSlug } from "../data/projectDetails";
 import { ProjectModal } from "../components/ProjectModal";
 
 const TABS = [
@@ -47,11 +47,54 @@ function buildRows(tab: TabKey): Row[] {
   return rows;
 }
 
+/** Which tab a project's own group belongs to, so a deep link lands on the right list. */
+function tabForTitle(title: string): TabKey {
+  for (const group of projectGroups) {
+    const here =
+      group.items?.some((p) => p.title === title) ||
+      group.subGroups?.some((sub) => sub.items.some((p) => p.title === title));
+    if (here) {
+      const tab = TABS.find((t) => (t.groups as readonly string[]).includes(group.label));
+      if (tab) return tab.key;
+    }
+  }
+  return "work";
+}
+
+const HASH_PREFIX = "#project-";
+
 export function GrandProjects() {
   const [active, setActive] = useState<string | null>(null);
   const [tab, setTab] = useState<TabKey>("work");
   const detail = active ? projectDetails[active] ?? null : null;
   const rows = buildRows(tab);
+
+  // Deep link: #project-<slug> opens straight to that card, on load and on
+  // back/forward. Nothing in the UI surfaces this — it exists so a URL (or
+  // a QR code built from one) can point straight at a specific project.
+  useEffect(() => {
+    const openFromHash = () => {
+      if (!location.hash.startsWith(HASH_PREFIX)) return;
+      const slug = location.hash.slice(HASH_PREFIX.length);
+      const title = Object.keys(projectDetails).find((t) => projectSlug(t) === slug);
+      if (!title) return;
+      setTab(tabForTitle(title));
+      setActive(title);
+    };
+    openFromHash();
+    window.addEventListener("hashchange", openFromHash);
+    return () => window.removeEventListener("hashchange", openFromHash);
+  }, []);
+
+  const open = (title: string) => {
+    setActive(title);
+    history.replaceState(null, "", `${HASH_PREFIX}${projectSlug(title)}`);
+  };
+
+  const close = () => {
+    setActive(null);
+    history.replaceState(null, "", location.pathname + location.search);
+  };
 
   return (
     <section id="g-work" className="g-section">
@@ -119,7 +162,7 @@ export function GrandProjects() {
                 type="button"
                 key={row.project.title}
                 className="g-proj"
-                onClick={() => setActive(row.project.title)}
+                onClick={() => open(row.project.title)}
                 initial={{ opacity: 0, x: -12 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: Math.min(i * 0.035, 0.4), ease: [0.16, 1, 0.3, 1] }}
@@ -148,7 +191,7 @@ export function GrandProjects() {
         </motion.div>
       </AnimatePresence>
 
-      <ProjectModal detail={detail} onClose={() => setActive(null)} />
+      <ProjectModal detail={detail} onClose={close} />
     </section>
   );
 }
