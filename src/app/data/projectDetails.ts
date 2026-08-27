@@ -92,6 +92,26 @@ export type Screenshot = {
   bg?: string;
 };
 
+export type SocialPlatform = "youtube" | "tiktok" | "facebook" | "instagram" | "x" | "line";
+
+/** One row in a "poster" layout's social list — a brand-coloured icon and a short call to action, not a bare URL. */
+export type SocialLink = {
+  platform: SocialPlatform;
+  label: string;
+  href: string;
+};
+
+/** The separate, visually distinct callout for a paid sticker pack — kept apart from the follow links because it's an ask, not a follow. */
+export type StickerShop = {
+  title: string;
+  sub: string;
+  blurb: string;
+  cta: string;
+  href: string;
+  /** Square preview of a sticker in the pack, shown next to the blurb. */
+  thumb?: string;
+};
+
 /**
  * The long-form project layout. Projects that declare one get the full
  * treatment; everything else gets a minimal one synthesised from the
@@ -104,8 +124,12 @@ export type CaseStudy = {
    * one size — side by side on a wide screen, stacked on a narrow one.
    * It is what a project wants when its artwork is a set of equals rather
    * than a lead shot plus supporting ones.
+   *
+   * "poster" is for a project that is an announcement rather than a case
+   * study — a big banner, a row of social follows, no screens-and-prose
+   * breakdown. Pair it with `socials` and optionally `stickers`.
    */
-  layout?: "pair";
+  layout?: "pair" | "poster";
   meta: { label: string; value: string }[];
   highlights?: string[];
   /**
@@ -114,6 +138,10 @@ export type CaseStudy = {
    * there's an actual before/after to point to, not a guess at one.
    */
   problem?: { before: string; after: string };
+  /** "poster" layout only — the row of brand-coloured follow links. */
+  socials?: SocialLink[];
+  /** "poster" layout only — the separate sticker-shop callout. */
+  stickers?: StickerShop;
   screens: Screenshot[];
 };
 
@@ -974,32 +1002,36 @@ export const projectDetails: Record<string, ProjectDetail> = {
     bg: choobiniBanner,
     cover: choobiniBanner,
     description:
-      "Choobini (Chibi Nuts) is an AI-generated 3D character IP — home to six chibi nut friends: Almond, Peanut, Hazel, Maca, Cashew and Pista. Built end to end with AI video and 3D tools and rolled out across social media as a set of short character videos and sticker packs.",
+      "Choobini (Chibi Nuts) was inspired by the variety of nuts themselves — each of the six characters, Almond, Peanut, Hazel, Maca, Cashew and Pista, takes its look and personality from its own nut. It's a set of 3D chibi character videos, built end to end with AI video and 3D tools and rolled out across social media alongside a sticker pack.",
     study: {
-      subtitle: "An AI-generated 3D character IP starring six chibi nut friends",
+      subtitle: "3D chibi character videos starring six nut friends",
+      layout: "poster",
       meta: [
         { label: "Role", value: "Creator, AI 3D Artist" },
         { label: "Characters", value: "Almond, Peanut, Hazel, Maca, Cashew, Pista" },
         { label: "Period", value: "Aug.2026 - Present" },
       ],
-      highlights: [
-        "Six character designs — Almond, Peanut, Hazel, Maca, Cashew and Pista — each themed after its own nut",
-        "Short-form 3D character videos produced end to end with AI video tools",
-        "Rolled out across YouTube, TikTok, Instagram, Facebook and X as a consistent set of profiles",
-        "A LINE sticker pack built from the same character designs",
+      socials: [
+        { platform: "youtube", label: "Subscribe on YouTube", href: "https://www.youtube.com/@Choobini" },
+        { platform: "tiktok", label: "Follow on TikTok", href: "https://www.tiktok.com/@choobini.official" },
+        {
+          platform: "facebook",
+          label: "Follow on Facebook",
+          href: "https://www.facebook.com/profile.php?id=61593964613463",
+        },
+        { platform: "instagram", label: "Follow on Instagram", href: "https://www.instagram.com/choobiniofficial/" },
+        { platform: "x", label: "Follow on X", href: "https://x.com/choobini_ofc" },
       ],
-      screens: [
-        { src: choobiniBanner, caption: "Choobini — Chibi Nuts", frame: "plain" },
-        { src: choobiniThumb, caption: "The six Chibi Nuts", frame: "plain" },
-      ],
+      stickers: {
+        title: "Choobini Sticker Shop",
+        sub: "LINE Stickers",
+        blurb: "Official LINE stickers starring all six Chibi Nuts — chat with the whole crew.",
+        cta: "Get the stickers",
+        href: "https://line.me/S/shop/sticker/author/6563849",
+        thumb: choobiniThumb,
+      },
+      screens: [{ src: choobiniBanner, caption: "Choobini — Chibi Nuts", frame: "plain" }],
     },
-    actions: [
-      { label: "YouTube", href: "https://www.youtube.com/@Choobini", variant: "secondary" },
-      { label: "TikTok", href: "https://www.tiktok.com/@choobini.official", variant: "secondary" },
-      { label: "Facebook", href: "https://www.facebook.com/profile.php?id=61593964613463", variant: "secondary" },
-      { label: "Instagram", href: "https://www.instagram.com/choobiniofficial/", variant: "secondary" },
-      { label: "X", href: "https://x.com/choobini_ofc", variant: "secondary" },
-      { label: "LINE Stickers", href: "https://line.me/S/shop/sticker/author/6563849", variant: "primary" },
-    ],
+    actions: [],
   },
 };

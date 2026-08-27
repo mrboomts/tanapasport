@@ -61,13 +61,15 @@ export function ProjectModal({
           noteRed={detail.noteRed}
         />
 
-        <div className="g-cs-actions">
-          {orderedActions(detail.actions).map((a) => (
-            <Button key={a.label} variant={a.variant} href={a.href}>
-              {a.label}
-            </Button>
-          ))}
-        </div>
+        {detail.actions.length ? (
+          <div className="g-cs-actions">
+            {orderedActions(detail.actions).map((a) => (
+              <Button key={a.label} variant={a.variant} href={a.href}>
+                {a.label}
+              </Button>
+            ))}
+          </div>
+        ) : null}
 
         <div className="mt-16 flex justify-center">
           <motion.button
