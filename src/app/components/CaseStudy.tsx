@@ -14,14 +14,14 @@ const SOCIAL_BRAND: Record<SocialPlatform, { bg: string; icon: ReactNode }> = {
     bg: "#FF0000",
     icon: (
       <svg viewBox="0 0 24 24" width="22" height="22">
-        <path d="M9.5 8.3v7.4l6.5-3.7-6.5-3.7Z" fill="#fff" />
+        <path d="M8.5 5.5 8.5 18.5 19 12Z" fill="#fff" />
       </svg>
     ),
   },
   tiktok: {
     bg: "#000000",
     icon: (
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="#fff">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="#fff">
         <path d="M16.6 5.82a4.28 4.28 0 0 1-3.03-3.02h-2.9v13.6a2.6 2.6 0 1 1-1.85-2.49v-2.97a5.56 5.56 0 1 0 4.75 5.5V9.4a7.15 7.15 0 0 0 4.03 1.24V7.62a4.27 4.27 0 0 1-1-.18v-.01Z" />
       </svg>
     ),
@@ -29,7 +29,7 @@ const SOCIAL_BRAND: Record<SocialPlatform, { bg: string; icon: ReactNode }> = {
   facebook: {
     bg: "#1877F2",
     icon: (
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="#fff">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="#fff">
         <path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.77-3.89 1.1 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12Z" />
       </svg>
     ),
@@ -37,7 +37,7 @@ const SOCIAL_BRAND: Record<SocialPlatform, { bg: string; icon: ReactNode }> = {
   instagram: {
     bg: "linear-gradient(135deg, #f9ce34 0%, #ee2a7b 55%, #6228d7 100%)",
     icon: (
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="1.8">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" strokeWidth="1.8">
         <rect x="3" y="3" width="18" height="18" rx="5.5" />
         <circle cx="12" cy="12" r="4" />
         <circle cx="17.2" cy="6.8" r="1" fill="#fff" stroke="none" />
@@ -47,7 +47,7 @@ const SOCIAL_BRAND: Record<SocialPlatform, { bg: string; icon: ReactNode }> = {
   x: {
     bg: "#000000",
     icon: (
-      <svg viewBox="0 0 24 24" width="17" height="17" fill="#fff">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="#fff">
         <path d="M13.6 10.6 20.4 3h-1.7l-5.9 6.6L8.1 3H3l7.1 9.9L3 21h1.7l6.2-7 5 7h5.1l-7.4-10.4Zm-2.2 2.5-.7-1L5 4.3h2.6l4.6 6.4.7 1 6 8.3h-2.6l-4.9-6.9Z" />
       </svg>
     ),
@@ -55,8 +55,24 @@ const SOCIAL_BRAND: Record<SocialPlatform, { bg: string; icon: ReactNode }> = {
   line: {
     bg: "#06C755",
     icon: (
-      <svg viewBox="0 0 24 24" width="21" height="21" fill="#fff">
-        <path d="M12 5C7.6 5 4 7.8 4 11.3c0 3.1 2.8 5.7 6.6 6.2.4.1.6.3.5.7l-.2 1c-.1.3.1.6.5.5.2 0 3.1-1.9 5.4-3.5 1.5-1 2.5-2.2 2.9-3.5.2-.5.3-1 .3-1.4C20 7.8 16.4 5 12 5Z" />
+      // the speech-bubble-plus-tail shape spent most of its box on empty
+      // padding around a tiny wordmark; a direct wordmark on the badge
+      // (the same approach as the Facebook "f" and X mark) reads bigger
+      // and centers cleanly with no fiddly bubble geometry to get wrong
+      <svg viewBox="0 0 24 24" width="22" height="22">
+        <text
+          x="12"
+          y="12.6"
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fontSize="8.6"
+          fontWeight="800"
+          fontFamily="Arial, Helvetica, sans-serif"
+          letterSpacing="-.3"
+          fill="#fff"
+        >
+          LINE
+        </text>
       </svg>
     ),
   },
