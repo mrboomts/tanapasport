@@ -141,9 +141,9 @@ export const projectGroups: {
   {
     label: "My personal projects",
     items: [
+      { title: "Choobini", period: "Aug.2026 - Present", type: "AI 3D character IP", accent: "#8a6a3a", imageAspect: "1 / 1" },
       { title: "1truth", period: "Nov.2025 - Present", type: "Responsive website", accent: "#0c0f18" },
       { title: "SAS Card game", period: "Dec.2025 - Present", type: "Card game (Figma)", accent: "#1c0a2e" },
-      { title: "Choobini", period: "Aug.2026 - Present", type: "AI 3D character IP", accent: "#8a6a3a", imageAspect: "1 / 1" },
       { title: "Wealth Up", period: "Oct.2023 - Nov.2023", type: "Mobile app (Figma)", accent: "#3a6b4a" },
       { title: "AniDrugs", period: "Oct.2022", type: "Mobile app (Figma)", accent: "#c9a86a" },
       { title: "ChocBana", period: "Sep.2022", type: "Mobile app (Figma)", accent: "#8a4a2c", imageAspect: "1 / 1" },

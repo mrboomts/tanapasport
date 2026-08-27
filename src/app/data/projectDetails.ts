@@ -981,7 +981,6 @@ export const projectDetails: Record<string, ProjectDetail> = {
         { label: "Role", value: "Creator, AI 3D Artist" },
         { label: "Characters", value: "Almond, Peanut, Hazel, Maca, Cashew, Pista" },
         { label: "Period", value: "Aug.2026 - Present" },
-        { label: "Medium", value: "AI-generated 3D video" },
       ],
       highlights: [
         "Six character designs — Almond, Peanut, Hazel, Maca, Cashew and Pista — each themed after its own nut",
