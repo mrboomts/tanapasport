@@ -25,6 +25,7 @@ import projHMeter from "../../imports/HMeterPage/hmeter-card-cover.png";
 import projPdpaAmarin from "../../imports/PdpaAmarinPage/pdpa-amarin-card-cover.png";
 import projOneTruth from "../../imports/OneTruthPage/1truth-card-cover.png";
 import projSasCardGame from "../../imports/SasCardGamePage/sas-cardgame-card-cover.png";
+import projChoobini from "../../imports/Choobini/choobini-thumb.webp";
 
 import certVanderbilt from "../../imports/Desktop1-1/5be78f1a79cbef3bc564fa68c6b139f2f752b153.png";
 import certGoogle from "../../imports/Desktop1-1/bb0a364819916ed9825a78a005aa34d44e29d0f3.png";
@@ -56,6 +57,7 @@ export const images = {
     "Book Buffet": projBookBuffet,
     "1truth": projOneTruth,
     "SAS Card game": projSasCardGame,
+    Choobini: projChoobini,
     "Just super app (Revamp)": projJustSuper,
     "Just Fin": projJustFin,
     "Just service": projJustService,

@@ -34,6 +34,8 @@ import hMeterCover from "../../imports/HMeterPage/hmeter-card-cover.png";
 import pdpaAmarinCover from "../../imports/PdpaAmarinPage/pdpa-amarin-card-cover.png";
 import oneTruthCover from "../../imports/OneTruthPage/1truth-card-cover.png";
 import sasCardGameCover from "../../imports/SasCardGamePage/sas-cardgame-card-cover.png";
+import choobiniBanner from "../../imports/Choobini/choobini-banner.webp";
+import choobiniThumb from "../../imports/Choobini/choobini-thumb.webp";
 import peaLogin from "../../imports/CaseStudies/pea-login.webp";
 import peaSubmission from "../../imports/CaseStudies/pea-submission.webp";
 import peaInspection from "../../imports/CaseStudies/pea-inspection.webp";
@@ -965,6 +967,40 @@ export const projectDetails: Record<string, ProjectDetail> = {
         href: "https://www.figma.com/design/8rqARVPGs1bAk5WN7dI3Zo/Card?node-id=0-1&p=f&t=0He1qeVHKHK1DSFB-0",
         variant: "primary",
       },
+    ],
+  },
+  Choobini: {
+    title: "Choobini",
+    bg: choobiniBanner,
+    cover: choobiniBanner,
+    description:
+      "Choobini (Chibi Nuts) is an AI-generated 3D character IP — home to six chibi nut friends: Almond, Peanut, Hazel, Maca, Cashew and Pista. Built end to end with AI video and 3D tools and rolled out across social media as a set of short character videos and sticker packs.",
+    study: {
+      subtitle: "An AI-generated 3D character IP starring six chibi nut friends",
+      meta: [
+        { label: "Role", value: "Creator, AI 3D Artist" },
+        { label: "Characters", value: "Almond, Peanut, Hazel, Maca, Cashew, Pista" },
+        { label: "Period", value: "Aug.2026 - Present" },
+        { label: "Medium", value: "AI-generated 3D video" },
+      ],
+      highlights: [
+        "Six character designs — Almond, Peanut, Hazel, Maca, Cashew and Pista — each themed after its own nut",
+        "Short-form 3D character videos produced end to end with AI video tools",
+        "Rolled out across YouTube, TikTok, Instagram, Facebook and X as a consistent set of profiles",
+        "A LINE sticker pack built from the same character designs",
+      ],
+      screens: [
+        { src: choobiniBanner, caption: "Choobini — Chibi Nuts", frame: "plain" },
+        { src: choobiniThumb, caption: "The six Chibi Nuts", frame: "plain" },
+      ],
+    },
+    actions: [
+      { label: "YouTube", href: "https://www.youtube.com/@Choobini", variant: "secondary" },
+      { label: "TikTok", href: "https://www.tiktok.com/@choobini.official", variant: "secondary" },
+      { label: "Facebook", href: "https://www.facebook.com/profile.php?id=61593964613463", variant: "secondary" },
+      { label: "Instagram", href: "https://www.instagram.com/choobiniofficial/", variant: "secondary" },
+      { label: "X", href: "https://x.com/choobini_ofc", variant: "secondary" },
+      { label: "LINE Stickers", href: "https://line.me/S/shop/sticker/author/6563849", variant: "primary" },
     ],
   },
 };
