@@ -20,7 +20,7 @@ import { ParametricGeometry } from "three/examples/jsm/geometries/ParametricGeom
  *
  * The spiral is the true golden logarithmic spiral, r = a·e^(bθ),
  * b = ln φ / (π/2), laid on a shallow cone so it has depth as it turns.
- * The shell is the same growth law as a tube — a real conch.
+ * The shell is the same growth law swept as a tube — a nautilus.
  */
 
 export type GoldenScene = { dispose(): void };
@@ -166,7 +166,7 @@ export function createGoldenScene(canvas: HTMLCanvasElement, opts: { reduced: bo
     s: [number, number, number],
     p: [number, number, number],
     mat: THREE.Material = furMat,
-    lined = true,
+    lined = false,
   ) {
     const m = new THREE.Mesh(sphere, mat);
     m.scale.set(...s);
@@ -192,9 +192,9 @@ export function createGoldenScene(canvas: HTMLCanvasElement, opts: { reduced: bo
   lift.add(hips);
 
   // torso: a soft bean from the hips toward the chest
-  blob(hips, [0.34, 0.25, 0.25], [0.2, 0.02, 0]);
-  blob(hips, [0.24, 0.23, 0.26], [0.02, 0, 0]); // haunches
-  blob(hips, [0.26, 0.26, 0.24], [0.38, 0.04, 0]); // chest mass
+  blob(hips, [0.37, 0.3, 0.3], [0.2, 0.03, 0]);
+  blob(hips, [0.28, 0.27, 0.31], [0.03, 0.01, 0]); // haunches
+  blob(hips, [0.3, 0.3, 0.29], [0.38, 0.05, 0]); // chest mass
 
   function leg(parent: THREE.Object3D, at: [number, number, number], thick: number) {
     const g = new THREE.Group();
@@ -207,8 +207,8 @@ export function createGoldenScene(canvas: HTMLCanvasElement, opts: { reduced: bo
     return { g, inner, paw };
   }
 
-  const backL = leg(hips, [0.0, -0.08, -0.12], 0.075);
-  const backR = leg(hips, [0.0, -0.08, 0.12], 0.075);
+  const backL = leg(hips, [0.0, -0.08, -0.13], 0.095);
+  const backR = leg(hips, [0.0, -0.08, 0.13], 0.095);
 
   // the fluffy tail: seven links, thickest in the middle, curled up
   const tailLinks: THREE.Group[] = [];
@@ -219,8 +219,8 @@ export function createGoldenScene(canvas: HTMLCanvasElement, opts: { reduced: bo
       const g = new THREE.Group();
       g.position.set(...(i === 0 ? at : ([-0.062, 0, 0] as [number, number, number])));
       parent.add(g);
-      const r = 0.058 + Math.sin((i / 10) * Math.PI * 0.85) * 0.03;
-      blob(g, [0.09, r, r], [-0.03, 0, 0], furMat, i === 10);
+      const r = 0.07 + Math.sin((i / 10) * Math.PI * 0.85) * 0.035;
+      blob(g, [0.09, r, r], [-0.03, 0, 0]);
       tailLinks.push(g);
       parent = g;
     }
@@ -229,22 +229,22 @@ export function createGoldenScene(canvas: HTMLCanvasElement, opts: { reduced: bo
   const chest = new THREE.Group();
   chest.position.set(0.44, 0.02, 0);
   hips.add(chest);
-  const frontL = leg(chest, [0.02, -0.12, -0.1], 0.068);
-  const frontR = leg(chest, [0.02, -0.12, 0.1], 0.068);
+  const frontL = leg(chest, [0.02, -0.12, -0.11], 0.084);
+  const frontR = leg(chest, [0.02, -0.12, 0.11], 0.084);
 
   const neck = new THREE.Group();
   neck.position.set(0.06, 0.12, 0);
   chest.add(neck);
-  blob(neck, [0.17, 0.16, 0.2], [0.04, 0.02, 0]); // ruff
+  blob(neck, [0.21, 0.2, 0.23], [0.03, 0.0, 0]); // ruff
 
   const head = new THREE.Group();
   head.position.set(0.1, 0.24, 0);
   head.scale.setScalar(1.18);
   neck.add(head);
-  blob(head, [0.29, 0.26, 0.3], [0, 0, 0]);
-  blob(head, [0.13, 0.12, 0.13], [0.08, -0.1, -0.17]); // cheek fluff
-  blob(head, [0.13, 0.12, 0.13], [0.08, -0.1, 0.17]);
-  blob(head, [0.1, 0.075, 0.12], [0.24, -0.08, 0], furMat, false); // muzzle
+  // one smooth, slightly wide head — only it (and the ears) carry an
+  // outline; on the body, overlapping outlines drew creases at every join
+  blob(head, [0.29, 0.265, 0.31], [0, 0, 0], furMat, true);
+  blob(head, [0.1, 0.07, 0.12], [0.225, -0.085, 0]); // muzzle
   blob(head, [0.028, 0.022, 0.034], [0.325, -0.035, 0], flat(NOSE), false);
 
   const eyeMat = flat(EYE);
@@ -313,30 +313,55 @@ export function createGoldenScene(canvas: HTMLCanvasElement, opts: { reduced: bo
   const shellSpin = new THREE.Group();
   shellRoot.add(shellSpin);
   {
-    // a conch: a tube swept along a golden conical spiral, growing as it goes
-    const turns = 2.4;
-    const a = 0.2 / Math.exp(B * turns * 2 * Math.PI);
+    // A nautilus: a tube swept round the same golden spiral, each whorl
+    // just wrapping the one before, with ribs across it — face-on, it
+    // reads as a shell at a glance.
+    const turns = 2.6;
+    const TH = turns * 2 * Math.PI;
+    const a = 0.24 / Math.exp(B * TH);
+    const K = 0.42; // tube radius as a fraction of the spiral radius
     const shellGeo = track(
       new ParametricGeometry(
         (u, v, target) => {
-          const th = u * turns * 2 * Math.PI;
+          const th = u * TH;
           const R = a * Math.exp(B * th);
           const ph = v * 2 * Math.PI;
-          const k = 0.62;
-          const r = R + k * R * Math.cos(ph);
-          target.set(r * Math.cos(th), r * Math.sin(th), -1.4 * R + k * R * Math.sin(ph));
+          const r = R + K * R * Math.cos(ph);
+          target.set(r * Math.cos(th), r * Math.sin(th), K * R * Math.sin(ph) * 0.8);
         },
-        90,
-        18,
+        140,
+        20,
       ),
     );
     const shellMat = track(
-      new THREE.MeshToonMaterial({ color: GOLD, gradientMap: ramp, side: THREE.DoubleSide, emissive: new THREE.Color("#3a2a10") }),
+      new THREE.MeshToonMaterial({
+        color: GOLD,
+        gradientMap: ramp,
+        side: THREE.DoubleSide,
+        emissive: new THREE.Color("#4a3514"),
+      }),
     );
     const shell = new THREE.Mesh(shellGeo, shellMat);
-    shell.rotation.set(-0.5, 0.4, 0.3);
-    shell.scale.setScalar(1.55);
     shellSpin.add(shell);
+
+    // ribs: a ring across the tube every so often, and the suture line
+    const ribPts: number[] = [];
+    for (let th = 0.6; th < TH; th += 0.42) {
+      const R = a * Math.exp(B * th);
+      for (let j = 0; j < 16; j++) {
+        const p0 = (j / 16) * Math.PI * 2;
+        const p1 = ((j + 1) / 16) * Math.PI * 2;
+        for (const ph of [p0, p1]) {
+          const r = R + K * R * 1.03 * Math.cos(ph);
+          ribPts.push(r * Math.cos(th), r * Math.sin(th), K * R * 1.03 * Math.sin(ph) * 0.8);
+        }
+      }
+    }
+    const ribGeo = track(new THREE.BufferGeometry());
+    ribGeo.setAttribute("position", new THREE.Float32BufferAttribute(ribPts, 3));
+    const ribMat = track(new THREE.LineBasicMaterial({ color: new THREE.Color("#8a6424"), transparent: true }));
+    shellSpin.add(new THREE.LineSegments(ribGeo, ribMat));
+    shellSpin.scale.setScalar(1.75);
   }
   const shellGlowMat = track(
     new THREE.SpriteMaterial({ map: glow, color: GOLD, transparent: true, opacity: 0.4, depthWrite: false }),
@@ -397,30 +422,58 @@ export function createGoldenScene(canvas: HTMLCanvasElement, opts: { reduced: bo
     raw.forEach(([x, y], i) => {
       spiralPos[i * 3] = -k * (x * c - y * sn);
       spiralPos[i * 3 + 1] = k * (x * sn + y * c);
-      spiralPos[i * 3 + 2] = -k * Math.hypot(x, y) * 0.3; // the cone
+      spiralPos[i * 3 + 2] = -k * Math.hypot(x, y) * 0.75; // the cone
     });
   }
   shellRoot.position.copy(POLE);
   spiralRoot.position.copy(POLE);
-  const spiralGeo = track(new THREE.BufferGeometry());
-  spiralGeo.setAttribute("position", new THREE.BufferAttribute(spiralPos, 3));
+  // The unfurled spiral is a gold tube, hairline at the pole and swelling
+  // toward the outer end — it grows out of the shell rather than being
+  // drawn beside it. TubeGeometry is constant-width, so each ring is
+  // scaled about its centre afterwards to taper it.
+  const curve = new THREE.CatmullRomCurve3(
+    Array.from({ length: 260 }, (_, i) => {
+      const j = Math.round((i / 259) * (SPIRAL_PTS - 1));
+      return new THREE.Vector3(spiralPos[j * 3], spiralPos[j * 3 + 1], spiralPos[j * 3 + 2]);
+    }),
+  );
+  const TUBE_SEGS = 420;
+  const TUBE_RADIAL = 10;
+  const taper = (f: number) => mix(0.006, 0.055, Math.pow(f, 0.8));
+  function taperedTube(scale: number) {
+    const g = new THREE.TubeGeometry(curve, TUBE_SEGS, 1, TUBE_RADIAL, false);
+    const pos = g.attributes.position as THREE.BufferAttribute;
+    const c = new THREE.Vector3();
+    const v = new THREE.Vector3();
+    for (let i = 0; i <= TUBE_SEGS; i++) {
+      const f = i / TUBE_SEGS;
+      curve.getPointAt(f, c);
+      for (let j = 0; j <= TUBE_RADIAL; j++) {
+        const idx = i * (TUBE_RADIAL + 1) + j;
+        v.fromBufferAttribute(pos, idx).sub(c).multiplyScalar(taper(f) * scale).add(c);
+        pos.setXYZ(idx, v.x, v.y, v.z);
+      }
+    }
+    g.computeVertexNormals();
+    return g;
+  }
+  const spiralGeo = track(taperedTube(1));
   const spiralMat = track(
-    new THREE.LineBasicMaterial({ color: GOLD_LT, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }),
+    new THREE.MeshToonMaterial({
+      color: GOLD,
+      gradientMap: ramp,
+      emissive: new THREE.Color("#5a4316"),
+      transparent: true,
+      opacity: 0,
+    }),
   );
-  spiralTilt.add(new THREE.Line(spiralGeo, spiralMat));
-  // a softer echo just behind, which reads as glow
-  const echoMat = track(
-    new THREE.LineBasicMaterial({ color: GOLD, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }),
-  );
-  const echo = new THREE.Line(spiralGeo, echoMat);
-  echo.scale.setScalar(1.012);
-  spiralTilt.add(echo);
+  spiralTilt.add(new THREE.Mesh(spiralGeo, spiralMat));
   // the bright tip that does the drawing
   const tipMat = track(
     new THREE.SpriteMaterial({ map: glow, color: GOLD_LT, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }),
   );
   const tip = new THREE.Sprite(tipMat);
-  tip.scale.setScalar(0.35);
+  tip.scale.setScalar(0.45);
   spiralTilt.add(tip);
 
   /* ================= animation ================= */
@@ -564,6 +617,9 @@ export function createGoldenScene(canvas: HTMLCanvasElement, opts: { reduced: bo
     H = canvas.clientHeight || 620;
     renderer.setSize(W, H, false);
     camera.aspect = W / H;
+    // the canvas is taller than the column by this much (see the CSS), so
+    // it sees that much more of the world at the same scale
+    camera.zoom = 1 / 1.16;
     camera.updateProjectionMatrix();
   }
   resize();
@@ -598,7 +654,7 @@ export function createGoldenScene(canvas: HTMLCanvasElement, opts: { reduced: bo
     const shellShown = reduced ? 0 : (1 - open) + back * open;
     shellRoot.visible = shellShown > 0.01;
     shellRoot.scale.setScalar(Math.max(0.001, (1 + open * (1 - back) * 1.4) * (shellShown > 0 ? 1 : 0)));
-    shellSpin.rotation.set(0, clock * 0.4, hit * 0.35);
+    shellSpin.rotation.set(Math.sin(clock * 0.7) * 0.25, Math.sin(clock * 0.5) * 0.45, hit * 0.4 + clock * 0.15);
     shellRoot.position.y = POLE.y + Math.sin(clock * 1.4) * 0.04;
     shellGlowMat.opacity = 0.4 * shellShown;
     shellRoot.traverse((o) => {
@@ -612,11 +668,11 @@ export function createGoldenScene(canvas: HTMLCanvasElement, opts: { reduced: bo
     // spiral: draw out from the pole, hold, fade
     const draw = reduced ? 1 : span(t, 0.535, 0.8);
     const fade = reduced ? 1 : 1 - span(t, 0.92, 0.97);
-    const n = Math.max(2, Math.round(draw * SPIRAL_PTS));
-    spiralGeo.setDrawRange(0, n);
+    const segs = Math.max(1, Math.round(draw * TUBE_SEGS));
+    spiralGeo.setDrawRange(0, segs * TUBE_RADIAL * 6);
     spiralMat.opacity = (draw > 0 ? 1 : 0) * fade;
-    echoMat.opacity = 0.35 * (draw > 0 ? 1 : 0) * fade;
-    tip.position.fromArray(spiralPos, (n - 1) * 3);
+    spiralMat.transparent = spiralMat.opacity < 0.99;
+    curve.getPointAt(segs / TUBE_SEGS, tip.position);
     tipMat.opacity = draw > 0 && draw < 1 ? 0.95 : 0;
     // it turns in space, so the cone reads as depth
     spiralTilt.rotation.y = reduced ? 0.25 : Math.sin(clock * 0.35) * 0.38;

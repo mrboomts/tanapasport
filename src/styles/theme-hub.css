@@ -492,12 +492,26 @@ body[data-modal-open="true"] .h-room-body .g-section > :not(.fixed) {
 /* ---------- Experience: the 3D kitten and golden spiral ---------- */
 .g-golden--3d {
   position: sticky;
+  aspect-ratio: 320 / 620;
 }
 
+/* The canvas bleeds well past the column and fades out at its edges, so
+   the cat's run and the spiral never meet a hard clipping edge. The scene
+   zooms by the same vertical bleed, so its scale matches the column. */
 .g-golden3d-canvas {
-  display: block;
-  width: 100%;
-  aspect-ratio: 320 / 620;
+  position: absolute;
+  inset: -8% -34%;
+  width: 168%;
+  height: 116%;
+  pointer-events: none;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, #000 16%, #000 84%, transparent),
+    linear-gradient(to bottom, transparent, #000 7%, #000 93%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent, #000 16%, #000 84%, transparent),
+    linear-gradient(to bottom, transparent, #000 7%, #000 93%, transparent);
+  mask-composite: intersect;
 }
 
 .g-golden3d-cap,
