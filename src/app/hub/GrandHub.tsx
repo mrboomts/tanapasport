@@ -8,14 +8,14 @@ import { GrandCredentials } from "../grand/GrandCredentials";
 import { GrandProfile } from "../grand/GrandProfile";
 import { GrandFooter } from "../grand/GrandFooter";
 import { IndexRoom } from "./IndexRoom";
+import { SolidIcon } from "./SolidIcon";
 import { ROOMS, roomByKey, useRoom, type RoomKey } from "./rooms";
 import type { HubScene } from "./scene";
 
 /** Mirrors SEQ_END in scene.ts — kept here so the scene can stay lazy. */
-const SEQ_MS = 1400;
+const SEQ_MS = 1450;
 /** When a played room starts fading in: as the solid unfolds. */
-const ROOM_DELAY = "0.8s";
-const PREVIEW_EVERY = 3200;
+const ROOM_DELAY = "0.85s";
 
 const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const liteDevice = () =>
@@ -73,12 +73,11 @@ export function GrandHub() {
   const roomStageRef = useRef<HTMLDivElement>(null);
   const roomRef = useRef<HTMLDivElement>(null);
   const menuRefs = useRef<Partial<Record<RoomKey, HTMLButtonElement | null>>>({});
+  const slotRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const sceneRef = useRef<HubScene | null>(null);
   const [ready, setReady] = useState(false);
 
   const [hovered, setHovered] = useState<number | null>(null);
-  const [cycle, setCycle] = useState(0);
-  const preview = hovered ?? ROOMS[cycle % ROOMS.length].solid;
 
   const [playing, setPlaying] = useState(false);
   const prevRoom = useRef<RoomKey | null | undefined>(undefined);
@@ -117,6 +116,15 @@ export function GrandHub() {
       const r = el.getBoundingClientRect();
       scene.setStage(which, { x: r.left, y: r.top, w: r.width, h: r.height });
     }
+    // slots are indexed by solid, not by room order
+    const slots: ({ x: number; y: number; w: number; h: number } | null)[] = [];
+    ROOMS.forEach((room, i) => {
+      const el = slotRefs.current[i];
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      slots[room.solid] = { x: r.left, y: r.top, w: r.width, h: r.height };
+    });
+    scene.setSlots(slots);
   }, []);
 
   useEffect(() => {
@@ -125,6 +133,7 @@ export function GrandHub() {
     const ro = new ResizeObserver(measure);
     if (hubStageRef.current) ro.observe(hubStageRef.current);
     if (roomStageRef.current) ro.observe(roomStageRef.current);
+    slotRefs.current.forEach((el) => el && ro.observe(el));
     window.addEventListener("resize", measure);
     return () => {
       ro.disconnect();
@@ -132,16 +141,9 @@ export function GrandHub() {
     };
   }, [ready, measure]);
 
-  /* ---------- hub preview: cycle the solids until someone points at one ---------- */
   useEffect(() => {
-    if (room || hovered !== null) return;
-    const id = window.setInterval(() => setCycle((c) => c + 1), PREVIEW_EVERY);
-    return () => window.clearInterval(id);
-  }, [room, hovered]);
-
-  useEffect(() => {
-    if (ready && !room) sceneRef.current?.setPreview(preview);
-  }, [ready, room, preview]);
+    if (ready) sceneRef.current?.setHover(room ? null : hovered);
+  }, [ready, room, hovered]);
 
   /* ---------- room changes drive the sequence ---------- */
   useEffect(() => {
@@ -223,20 +225,17 @@ export function GrandHub() {
           </p>
         </div>
 
-        <div className="h-stage" ref={hubStageRef} aria-hidden>
-          <span className="h-stage-caption">
-            {ROOMS.find((r) => r.solid === preview)?.element} ·{" "}
-            {ROOMS.find((r) => r.solid === preview)?.shape}
-          </span>
-        </div>
+        <div className="h-stage" ref={hubStageRef} aria-hidden />
 
+        {/* The solids are the menu. With WebGL the scene draws them over
+            each slot; without it, a static line drawing stands in. */}
         <nav className="h-menu" aria-label="Rooms">
-          {ROOMS.map((r) => (
+          {ROOMS.map((r, i) => (
             <button
               key={r.key}
               type="button"
-              className="h-menu-item"
-              data-preview={preview === r.solid}
+              className="h-orb"
+              data-hover={hovered === r.solid}
               ref={(el) => {
                 menuRefs.current[r.key] = el;
               }}
@@ -246,13 +245,18 @@ export function GrandHub() {
               onBlur={() => setHovered(null)}
               onClick={() => go(r.key)}
             >
-              <span className="h-menu-num">{r.num}</span>
-              <span className="h-menu-text">
-                <span className="h-menu-label">{r.label}</span>
-                <span className="h-menu-meta">{r.blurb}</span>
+              <span
+                className="h-orb-slot"
+                aria-hidden
+                ref={(el) => {
+                  slotRefs.current[i] = el;
+                }}
+              >
+                {ready ? null : <SolidIcon solid={r.solid} />}
               </span>
-              <span className="h-menu-el" aria-hidden>
-                {r.element}
+              <span className="h-orb-text">
+                <span className="h-menu-num">{r.num}</span>
+                <span className="h-orb-label">{r.label}</span>
               </span>
             </button>
           ))}

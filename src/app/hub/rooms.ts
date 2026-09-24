@@ -6,11 +6,11 @@ import { projectDetails, projectSlug } from "../data/projectDetails";
  * element. `solid` indexes SOLIDS in ../grand/platonic.
  */
 export const ROOMS = [
-  { key: "index", num: "01", label: "Index", element: "Aether", solid: 3, shape: "Dodecahedron", blurb: "Who I am, in brief" },
-  { key: "experience", num: "02", label: "Experience", element: "Earth", solid: 1, shape: "Cube", blurb: "Where I have worked" },
-  { key: "work", num: "03", label: "Work", element: "Fire", solid: 0, shape: "Tetrahedron", blurb: "What I have designed" },
-  { key: "certifications", num: "04", label: "Certifications", element: "Air", solid: 2, shape: "Octahedron", blurb: "What I have studied" },
-  { key: "profile", num: "05", label: "Profile", element: "Water", solid: 4, shape: "Icosahedron", blurb: "About me, and how to reach me" },
+  { key: "index", num: "01", label: "Index", solid: 3 },
+  { key: "experience", num: "02", label: "Experience", solid: 1 },
+  { key: "work", num: "03", label: "Work", solid: 0 },
+  { key: "certifications", num: "04", label: "Certifications", solid: 2 },
+  { key: "profile", num: "05", label: "Profile", solid: 4 },
 ] as const;
 
 export type RoomKey = (typeof ROOMS)[number]["key"];

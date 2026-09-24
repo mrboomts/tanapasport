@@ -8,7 +8,10 @@
 .h-root {
   position: fixed;
   inset: 0;
+  /* clip, not hidden: the resting stage hangs off the edge, and a hidden
+     overflow can still be scrolled sideways by focus / scrollIntoView */
   overflow: hidden;
+  overflow: clip;
   background: var(--g-ink);
   color: var(--g-ivory);
   font-family: var(--font-body);
@@ -138,77 +141,66 @@
   min-height: 0;
 }
 
-.h-stage-caption {
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  transform: translateX(-50%);
-  white-space: nowrap;
-  font-size: 10px;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-  color: rgba(233, 200, 119, 0.7);
-}
-
-.h-root:not([data-3d="true"]) .h-stage-caption {
-  display: none;
-}
-
-/* ---------- Hub menu ---------- */
+/* ---------- Hub menu: the solids themselves ---------- */
 .h-menu {
   grid-area: menu;
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem 0;
+}
+
+.h-orb {
+  display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-}
-
-@media (min-width: 900px) {
-  .h-menu {
-    align-self: center;
-    gap: 0.35rem;
-  }
-}
-
-.h-menu-item {
-  display: grid;
-  grid-template-columns: 2.2rem minmax(0, 1fr) auto;
   align-items: center;
-  gap: 0.75rem;
-  width: 100%;
-  min-height: 52px;
-  padding: 0.55rem 1rem;
-  text-align: left;
-  border: 1px solid rgba(233, 200, 119, 0.18);
-  border-radius: 14px;
-  background: rgba(10, 9, 18, 0.5);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  gap: 0.2rem;
+  width: 33.333%;
+  padding: 0.25rem 0.25rem 0.5rem;
+  border-radius: 16px;
   color: var(--g-ivory);
   cursor: pointer;
-  transition:
-    border-color 0.3s ease,
-    background 0.3s ease,
-    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
 }
 
-@media (min-width: 900px) {
-  .h-menu-item {
-    padding: 0.85rem 1.1rem;
-    min-height: 64px;
-  }
+.h-orb-slot {
+  display: block;
+  width: clamp(60px, 17vw, 84px);
+  aspect-ratio: 1;
 }
 
-.h-menu-item[data-preview="true"] {
-  border-color: rgba(233, 200, 119, 0.6);
-  background: rgba(233, 200, 119, 0.08);
+.h-orb-svg {
+  width: 100%;
+  height: 100%;
 }
 
-.h-menu-item:hover,
-.h-menu-item:focus-visible {
-  border-color: var(--g-gold);
-  background: rgba(233, 200, 119, 0.12);
-  transform: translateX(-4px);
-  outline: none;
+.h-orb-text {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+.h-orb .h-menu-num {
+  font-size: 0.75rem;
+}
+
+.h-orb-label {
+  font-family: var(--font-display);
+  font-size: clamp(0.95rem, 3.6vw, 1.1rem);
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.h-orb:hover .h-orb-label,
+.h-orb:focus-visible .h-orb-label,
+.h-orb[data-hover="true"] .h-orb-label {
+  color: var(--g-gold-lt);
+}
+
+.h-orb:focus-visible {
+  outline: 1px solid rgba(233, 200, 119, 0.6);
+  outline-offset: -2px;
 }
 
 .h-menu-num {
@@ -218,37 +210,36 @@
   letter-spacing: 0.04em;
 }
 
-.h-menu-text {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.h-menu-label {
-  font-family: var(--font-display);
-  font-size: clamp(1.1rem, 1.6vw, 1.35rem);
-  font-weight: 600;
-  line-height: 1.2;
-}
-
-.h-menu-meta {
-  font-size: 12px;
-  color: var(--g-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.h-menu-el {
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(233, 200, 119, 0.65);
-}
-
-@media (max-width: 380px) {
-  .h-menu-meta {
-    display: none;
+/* desktop: a column beside the centre, solid then its name */
+@media (min-width: 900px) {
+  .h-menu {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-self: center;
+    justify-content: center;
+    gap: clamp(0rem, 1vh, 0.6rem);
+  }
+  .h-orb {
+    flex-direction: row;
+    gap: 1.1rem;
+    width: auto;
+    padding: 0.2rem 1rem 0.2rem 0.2rem;
+  }
+  .h-orb-slot {
+    width: clamp(64px, 11vh, 92px);
+  }
+  .h-orb .h-menu-num {
+    font-size: 0.9rem;
+  }
+  .h-orb-label {
+    font-size: clamp(1.15rem, 1.7vw, 1.5rem);
+    transition:
+      color 0.3s ease,
+      transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .h-orb:hover .h-orb-label,
+  .h-orb[data-hover="true"] .h-orb-label {
+    transform: translateX(4px);
   }
 }
 
