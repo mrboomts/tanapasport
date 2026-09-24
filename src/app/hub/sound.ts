@@ -25,6 +25,7 @@ let hall: GainNode | null = null;
 let drone: GainNode | null = null;
 let noise: AudioBuffer | null = null;
 const on = { bgm: false, sfx: false };
+let gestureBound = false;
 const anyOn = () => on.bgm || on.sfx;
 
 // In development a code reload re-runs this module; close the old context
@@ -101,7 +102,7 @@ function ensure() {
   document.addEventListener("visibilitychange", () => {
     if (!ctx) return;
     if (document.hidden) void ctx.suspend();
-    else if (anyOn()) void ctx.resume();
+    else if (anyOn()) void ctx.resume().catch(() => {});
   });
   return ctx;
 }
@@ -355,18 +356,33 @@ export const sound = {
     return on.sfx;
   },
 
-  /** Read the saved choices; if either was on, start on the first gesture. */
+  /**
+   * Read the saved choices, and from then on wake the audio on every tap,
+   * click or key press — not just the first. Phones and tablets suspend
+   * (iOS: "interrupt") the audio whenever the screen locks or the browser
+   * goes to the background, and they refuse to resume it without a fresh
+   * gesture; a one-shot listener left the site silent after the first
+   * time away. touchend/click are the gestures iOS accepts for audio.
+   */
   init() {
     on.bgm = readPref("bgm");
     on.sfx = readPref("sfx");
-    if (!anyOn()) return;
-    const start = () => {
-      window.removeEventListener("pointerdown", start);
-      window.removeEventListener("keydown", start);
-      apply(3);
+    if (gestureBound) return;
+    gestureBound = true;
+    const wakeUp = () => {
+      if (!anyOn()) return;
+      if (!ctx) {
+        apply(3);
+        return;
+      }
+      if (ctx.state !== "running") {
+        void ctx.resume();
+        fadeMaster(0.55, 1.2);
+      }
     };
-    window.addEventListener("pointerdown", start);
-    window.addEventListener("keydown", start);
+    for (const ev of ["pointerup", "touchend", "click", "keydown"]) {
+      window.addEventListener(ev, wakeUp, { passive: true });
+    }
   },
 
   set(ch: Channel, value: boolean) {
