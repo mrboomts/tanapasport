@@ -488,3 +488,53 @@ body[data-modal-open="true"] .h-room-body .g-section > :not(.fixed) {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
+
+/* ---------- Experience: the 3D kitten and golden spiral ---------- */
+.g-golden--3d {
+  position: sticky;
+}
+
+.g-golden3d-canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 320 / 620;
+}
+
+.g-golden3d-cap,
+.g-golden3d-phi {
+  position: absolute;
+  left: 6%;
+  pointer-events: none;
+}
+
+.g-golden3d-cap {
+  top: 1.5%;
+  font-size: 10px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--g-gold);
+  opacity: 0.85;
+}
+
+.g-golden3d-phi {
+  bottom: 0.5%;
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--g-gold-lt);
+  opacity: 0;
+  animation: g-golden-phi-in 18s ease-in-out infinite;
+}
+
+/* Certifications: the grid drew its hairlines as a 1px gap over a gold
+   background, which needs opaque ink cells — and those hid the starfield
+   and the resting solid. In the hub the cells are see-through and each
+   draws its own half of the shared line instead. */
+.h-room .g-creds {
+  gap: 0;
+  background: transparent;
+}
+
+.h-room .g-cred {
+  background: rgba(10, 9, 18, 0.18);
+  box-shadow: 0 0 0 0.5px var(--g-hair);
+}

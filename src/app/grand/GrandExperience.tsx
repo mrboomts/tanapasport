@@ -1,7 +1,7 @@
 import { motion } from "motion/react";
 import { ArrowUpRight } from "lucide-react";
 import { experience, profile } from "../data/portfolio";
-import { GrandGolden } from "./GrandGolden";
+import { GoldenStage } from "../hub/GoldenStage";
 
 export function GrandExperience() {
   return (
@@ -77,7 +77,7 @@ export function GrandExperience() {
           ))}
         </ol>
 
-        <GrandGolden />
+        <GoldenStage />
       </div>
     </section>
   );
