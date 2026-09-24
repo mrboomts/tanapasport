@@ -1,4 +1,4 @@
-import { ArrowUp } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { profile } from "../data/portfolio";
 import { GrandCopyMail } from "./GrandCopyMail";
 import portfolioQr from "../../imports/QrCode/portfolio-qr.png";
@@ -36,8 +36,8 @@ export function GrandFooter() {
         </div>
 
         <div className="g-footer-col g-footer-col--end">
-          <a href="#g-index" className="g-btn g-btn--ghost">
-            Back to top <ArrowUp className="w-4 h-4" />
+          <a href="#" className="g-btn g-btn--ghost">
+            <ArrowLeft className="w-4 h-4" /> Back to menu
           </a>
         </div>
       </div>

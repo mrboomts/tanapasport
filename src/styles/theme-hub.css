@@ -1,0 +1,407 @@
+/* ============================================================
+   Full-3D hub (branch full-3d)
+   One fixed screen: the WebGL canvas behind, the hub on top, and
+   the open room over both as its own scroller. The page itself
+   never scrolls.
+   ============================================================ */
+
+.h-root {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--g-ink);
+  color: var(--g-ivory);
+  font-family: var(--font-body);
+}
+
+.h-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.h-root[data-3d="true"] .h-canvas {
+  opacity: 1;
+}
+
+/* where the object rests while a room is open */
+.h-room-stage {
+  position: absolute;
+  right: -6vmin;
+  bottom: -6vmin;
+  width: 58vmin;
+  height: 58vmin;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+@media (max-width: 767px) {
+  .h-room-stage {
+    right: -18vw;
+    bottom: 6vh;
+    width: 80vw;
+    height: 80vw;
+  }
+}
+
+/* ---------- Hub ---------- */
+.h-hub {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(150px, 1fr) auto;
+  grid-template-areas: "top" "name" "stage" "menu";
+  gap: 0.75rem;
+  padding: max(1rem, env(safe-area-inset-top)) 1rem max(1rem, env(safe-area-inset-bottom));
+  transition:
+    opacity 0.5s ease,
+    visibility 0s linear 0s;
+}
+
+.h-hub[data-hidden="true"] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.45s ease,
+    visibility 0s linear 0.45s;
+}
+
+@media (min-width: 900px) {
+  .h-hub {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(280px, 0.75fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas:
+      "top top top"
+      "name stage menu";
+    gap: 1.5rem clamp(1.5rem, 3vw, 3.5rem);
+    padding: 2rem clamp(1.5rem, 4vw, 4.5rem) 2.5rem;
+  }
+}
+
+.h-hub-top {
+  grid-area: top;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.h-hub-role {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--g-muted);
+  line-height: 1.5;
+}
+
+.h-hub-name {
+  grid-area: name;
+  align-self: end;
+}
+
+.h-hub-name .g-display {
+  font-size: clamp(2rem, 8.4vw, 3rem);
+}
+
+@media (min-width: 900px) {
+  .h-hub-name {
+    padding-bottom: 1rem;
+  }
+  .h-hub-name .g-display {
+    font-size: clamp(2.2rem, 3.6vw, 4.6rem);
+  }
+}
+
+.h-hub-alias {
+  margin-top: 0.4rem;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(1rem, 1.6vw, 1.3rem);
+  color: var(--g-gold-lt);
+}
+
+.h-hub-alias span {
+  color: var(--g-gold-dk);
+  margin: 0 0.35em;
+}
+
+.h-stage {
+  grid-area: stage;
+  position: relative;
+  min-height: 0;
+}
+
+.h-stage-caption {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 10px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(233, 200, 119, 0.7);
+}
+
+.h-root:not([data-3d="true"]) .h-stage-caption {
+  display: none;
+}
+
+/* ---------- Hub menu ---------- */
+.h-menu {
+  grid-area: menu;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+@media (min-width: 900px) {
+  .h-menu {
+    align-self: center;
+    gap: 0.35rem;
+  }
+}
+
+.h-menu-item {
+  display: grid;
+  grid-template-columns: 2.2rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 52px;
+  padding: 0.55rem 1rem;
+  text-align: left;
+  border: 1px solid rgba(233, 200, 119, 0.18);
+  border-radius: 14px;
+  background: rgba(10, 9, 18, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--g-ivory);
+  cursor: pointer;
+  transition:
+    border-color 0.3s ease,
+    background 0.3s ease,
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (min-width: 900px) {
+  .h-menu-item {
+    padding: 0.85rem 1.1rem;
+    min-height: 64px;
+  }
+}
+
+.h-menu-item[data-preview="true"] {
+  border-color: rgba(233, 200, 119, 0.6);
+  background: rgba(233, 200, 119, 0.08);
+}
+
+.h-menu-item:hover,
+.h-menu-item:focus-visible {
+  border-color: var(--g-gold);
+  background: rgba(233, 200, 119, 0.12);
+  transform: translateX(-4px);
+  outline: none;
+}
+
+.h-menu-num {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: var(--g-gold);
+  letter-spacing: 0.04em;
+}
+
+.h-menu-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.h-menu-label {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 1.6vw, 1.35rem);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.h-menu-meta {
+  font-size: 12px;
+  color: var(--g-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.h-menu-el {
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(233, 200, 119, 0.65);
+}
+
+@media (max-width: 380px) {
+  .h-menu-meta {
+    display: none;
+  }
+}
+
+/* ---------- Room ---------- */
+.h-room {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  /* dark enough to read on, light enough that the resting solid shows */
+  background: linear-gradient(180deg, rgba(10, 9, 18, 0.9), rgba(10, 9, 18, 0.74));
+  outline: none;
+  /* opacity only — a transform here would trap the project card's
+     position:fixed inside the room */
+  animation: h-room-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--h-delay, 0s);
+}
+
+@keyframes h-room-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.h-room-bar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: max(0.75rem, env(safe-area-inset-top)) var(--g-pad-x) 0.75rem;
+  background: rgba(10, 9, 18, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(233, 200, 119, 0.14);
+}
+
+.h-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(233, 200, 119, 0.45);
+  color: var(--g-gold-lt);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.25s ease;
+}
+
+.h-back:hover,
+.h-back:focus-visible {
+  background: rgba(233, 200, 119, 0.12);
+  outline: none;
+}
+
+.h-room-tabs {
+  display: none;
+}
+
+.h-room-title {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+@media (min-width: 900px) {
+  .h-room-tabs {
+    display: flex;
+    gap: 0.25rem;
+    margin-left: auto;
+  }
+  .h-room-title {
+    display: none;
+  }
+}
+
+.h-room-tab {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  font-size: 14px;
+  color: rgba(244, 241, 232, 0.72);
+  transition:
+    color 0.25s ease,
+    background 0.25s ease;
+}
+
+.h-room-tab .h-menu-num {
+  font-size: 0.8rem;
+}
+
+.h-room-tab:hover {
+  color: var(--g-ivory);
+  background: rgba(233, 200, 119, 0.08);
+}
+
+.h-room-tab[aria-current="page"] {
+  color: var(--g-ink);
+  background: var(--g-gold-grad);
+}
+
+.h-room-tab[aria-current="page"] .h-menu-num {
+  color: var(--g-ink);
+}
+
+.h-room-body > .g-section:last-child,
+.h-room-body > .g-footer:last-child {
+  border-bottom: 0;
+}
+
+.h-room-body .g-section:first-child {
+  padding-top: clamp(2.5rem, 7vh, 5rem);
+}
+
+/* Index room: the intro sits beside the portrait */
+.h-room-body .g-alias-row {
+  align-items: flex-start;
+  margin-top: 1.25rem;
+}
+
+.h-index-intro {
+  margin-top: 0;
+}
+
+/* sticky things inside a room stick to the room's own scroller */
+.h-room .g-golden {
+  top: calc(84px + 2rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .h-room {
+    animation: none;
+  }
+  .h-canvas,
+  .h-hub {
+    transition: none;
+  }
+}

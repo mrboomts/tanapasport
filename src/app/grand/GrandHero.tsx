@@ -8,7 +8,7 @@ import { GrandArtifact } from "./GrandArtifact";
 const UX_START_YEAR = 2022;
 
 /** Figures derived from the real data so they cannot drift out of date. */
-function getFigures() {
+export function getFigures() {
   const projects = projectGroups.reduce((total, group) => {
     const direct = group.items?.length ?? 0;
     const nested = group.subGroups?.reduce((n, s) => n + s.items.length, 0) ?? 0;
@@ -31,7 +31,7 @@ function getFigures() {
   ];
 }
 
-function CountUp({ to, suffix }: { to: number; suffix: string }) {
+export function CountUp({ to, suffix }: { to: number; suffix: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.6 });
   const [n, setN] = useState(0);

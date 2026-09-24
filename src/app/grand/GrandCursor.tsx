@@ -14,7 +14,7 @@ const RING_LABEL = "SCROLL\u00A0DOWN\u00A0•\u00A0SCROLL\u00A0DOWN\u00A0•\u00
  * The glow and sparks are pointer-only decoration and stay disabled for
  * touch and for prefers-reduced-motion.
  */
-export function GrandCursor() {
+export function GrandCursor({ ring = true }: { ring?: boolean }) {
   const glowRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
   const layerRef = useRef<HTMLDivElement>(null);
@@ -144,6 +144,7 @@ export function GrandCursor() {
       <div className="g-cursor-glow" ref={glowRef} />
       <div className="g-cursor-sparks" ref={layerRef} />
 
+      {ring ? (
       <div className="g-ring" ref={ringRef} data-hidden={!showRing}>
         <svg viewBox="0 0 100 100" className="g-ring-svg">
           <defs>
@@ -159,6 +160,7 @@ export function GrandCursor() {
           <path d="M12 5v14M6 13l6 6 6-6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </div>
+      ) : null}
     </div>
   );
 }

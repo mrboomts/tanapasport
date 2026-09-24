@@ -89,12 +89,13 @@ export function GrandProjects() {
 
   const open = (title: string) => {
     setActive(title);
-    history.replaceState(null, "", `#${projectSlug(title)}`);
+    history.replaceState(history.state, "", `#${projectSlug(title)}`);
   };
 
   const close = () => {
     setActive(null);
-    history.replaceState(null, "", location.pathname + location.search);
+    // back to the Work room's own hash, keeping the hub's history marker
+    history.replaceState(history.state, "", "#work");
   };
 
   return (
