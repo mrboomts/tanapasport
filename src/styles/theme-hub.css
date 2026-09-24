@@ -81,7 +81,8 @@
 
 @media (min-width: 900px) {
   .h-hub {
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(280px, 0.75fr);
+    /* equal side columns, so the centre really is the centre of the screen */
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) minmax(0, 1fr);
     grid-template-rows: auto minmax(0, 1fr);
     grid-template-areas:
       "top top top"
@@ -130,11 +131,18 @@
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 0.9rem;
-  font-size: clamp(13px, 1.25vw, 16px);
+  font-size: clamp(12px, 1.15vw, 16px);
   font-weight: 700;
-  letter-spacing: 0.24em;
+  letter-spacing: 0.22em;
+  white-space: nowrap;
   text-transform: uppercase;
   color: var(--g-gold);
+}
+
+@media (min-width: 900px) and (max-width: 1199px) {
+  .h-hub-kicker .g-eyebrow-rule {
+    display: none;
+  }
 }
 
 .h-hub-alias {
@@ -154,6 +162,13 @@
   grid-area: stage;
   position: relative;
   min-height: 0;
+}
+
+@media (min-width: 900px) {
+  /* breathing room either side, equal, so the flower never crowds the menu */
+  .h-stage {
+    margin-inline: clamp(0.5rem, 2.5vw, 2.5rem);
+  }
 }
 
 /* ---------- Hub menu: the solids themselves ---------- */
@@ -231,6 +246,7 @@
     flex-direction: column;
     flex-wrap: nowrap;
     align-self: center;
+    justify-self: end;
     justify-content: center;
     gap: clamp(0rem, 1vh, 0.6rem);
   }
