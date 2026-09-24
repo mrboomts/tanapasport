@@ -138,10 +138,25 @@ export function GrandHub() {
     if (hubStageRef.current) ro.observe(hubStageRef.current);
     if (roomStageRef.current) ro.observe(roomStageRef.current);
     slotRefs.current.forEach((el) => el && ro.observe(el));
-    window.addEventListener("resize", measure);
+    // Turning a phone moves things without always resizing them (so the
+    // ResizeObserver stays quiet), and some browsers report the old size
+    // on the first resize event — so measure again once layout settles.
+    let timers: number[] = [];
+    const settle = () => {
+      measure();
+      timers.forEach(clearTimeout);
+      timers = [120, 350, 700].map((ms) => window.setTimeout(measure, ms));
+      requestAnimationFrame(measure);
+    };
+    window.addEventListener("resize", settle);
+    window.addEventListener("orientationchange", settle);
+    window.visualViewport?.addEventListener("resize", settle);
     return () => {
       ro.disconnect();
-      window.removeEventListener("resize", measure);
+      timers.forEach(clearTimeout);
+      window.removeEventListener("resize", settle);
+      window.removeEventListener("orientationchange", settle);
+      window.visualViewport?.removeEventListener("resize", settle);
     };
   }, [ready, measure]);
 

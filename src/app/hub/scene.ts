@@ -624,6 +624,10 @@ export function createHubScene(
     wake();
   };
   window.addEventListener("resize", onResize);
+  // the canvas itself, too: after a rotation its size can settle later
+  // than the window's resize event
+  const canvasRO = new ResizeObserver(onResize);
+  canvasRO.observe(canvas);
   wake();
 
   function snapToRest(solid: number) {
@@ -711,6 +715,7 @@ export function createHubScene(
       cancelAnimationFrame(raf);
       running = false;
       window.removeEventListener("resize", onResize);
+      canvasRO.disconnect();
       disposables.forEach((d) => d.dispose());
       renderer.dispose();
     },
