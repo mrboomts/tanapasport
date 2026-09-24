@@ -23,6 +23,14 @@ let drone: GainNode | null = null;
 let noise: AudioBuffer | null = null;
 let enabled = false;
 
+// In development a code reload re-runs this module; close the old context
+// so its drone can't carry on playing out of reach of the mute button.
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => {
+    void ctx?.close();
+  });
+}
+
 function readPref() {
   try {
     return localStorage.getItem(KEY) === "on";
@@ -337,7 +345,12 @@ export const sound = {
       void ctx!.resume();
       fadeMaster(0.55, 2);
     } else {
-      fadeMaster(0, 0.6);
+      fadeMaster(0, 0.4);
+      // then stop the audio clock outright, so nothing can keep humming
+      const c = ctx;
+      window.setTimeout(() => {
+        if (!enabled && c && c.state === "running") void c.suspend();
+      }, 450);
     }
   },
 
