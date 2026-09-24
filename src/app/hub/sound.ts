@@ -9,10 +9,9 @@
  * send from every voice, which is most of what makes it sound big.
  *
  * Two independent switches: the background drone ("BGM") and the effects
- * (hover, fly-in, back). Both off by default — browsers block sound before
- * a gesture anyway, and a portfolio opened at work should not start
- * humming. Each choice is remembered; if either was on, the audio resumes
- * on the visitor's first tap.
+ * (hover, fly-in, back). Both on by default; each choice is remembered.
+ * Browsers won't play sound before the visitor interacts, so the audio
+ * starts on their first tap, click or key press.
  */
 
 const KEYS = { bgm: "tanapas-bgm", sfx: "tanapas-sfx" } as const;
@@ -36,11 +35,12 @@ if (import.meta.hot) {
   });
 }
 
+/** On unless the visitor has switched it off before. */
 function readPref(ch: Channel) {
   try {
-    return localStorage.getItem(KEYS[ch]) === "on";
+    return localStorage.getItem(KEYS[ch]) !== "off";
   } catch {
-    return false;
+    return true;
   }
 }
 

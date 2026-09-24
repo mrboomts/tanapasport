@@ -4,7 +4,7 @@ import { sound } from "./sound";
 
 /**
  * The speaker button and its little menu: background music (the space
- * drone) and sound effects switch independently. Both start off; choices
+ * drone) and sound effects switch independently. Both start on; choices
  * are remembered by sound.ts.
  */
 export function SoundMenu() {
