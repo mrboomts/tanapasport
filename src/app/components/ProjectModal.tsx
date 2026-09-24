@@ -33,7 +33,7 @@ export function ProjectModal({
   return (
     <motion.div
       className="fixed inset-0 z-50 overflow-y-auto"
-      style={{ background: "var(--background)" }}
+      style={{ background: "var(--modal-bg, var(--background))" }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}

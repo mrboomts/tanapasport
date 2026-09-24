@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Volume2, VolumeX } from "lucide-react";
 import { profile } from "../data/portfolio";
 import { GrandCursor } from "../grand/GrandCursor";
 import { GrandExperience } from "../grand/GrandExperience";
@@ -7,8 +7,9 @@ import { GrandProjects } from "../grand/GrandProjects";
 import { GrandCredentials } from "../grand/GrandCredentials";
 import { GrandProfile } from "../grand/GrandProfile";
 import { GrandFooter } from "../grand/GrandFooter";
-import { IndexRoom } from "./IndexRoom";
+import { IntroRoom } from "./IntroRoom";
 import { SolidIcon } from "./SolidIcon";
+import { sound } from "./sound";
 import { ROOMS, roomByKey, useRoom, type RoomKey } from "./rooms";
 import type { HubScene } from "./scene";
 
@@ -35,8 +36,8 @@ function canRun3d() {
 
 function RoomContent({ room }: { room: RoomKey }) {
   switch (room) {
-    case "index":
-      return <IndexRoom />;
+    case "intro":
+      return <IntroRoom />;
     case "experience":
       return <GrandExperience />;
     case "work":
@@ -80,6 +81,17 @@ export function GrandHub() {
   const [hovered, setHovered] = useState<number | null>(null);
 
   const [playing, setPlaying] = useState(false);
+  const [soundOn, setSoundOn] = useState(false);
+
+  useEffect(() => {
+    sound.init();
+    setSoundOn(sound.enabled);
+  }, []);
+
+  const toggleSound = () => {
+    sound.setEnabled(!soundOn);
+    setSoundOn(!soundOn);
+  };
   const prevRoom = useRef<RoomKey | null | undefined>(undefined);
 
   /* ---------- load the scene (lazily: three is its own chunk) ---------- */
@@ -156,6 +168,7 @@ export function GrandHub() {
       // straight in; choosing one from the hub plays the sequence
       const instant = prev === undefined || reducedMotion() || !scene;
       scene?.enter(roomByKey(room).solid, { instant });
+      if (!instant) sound.enter(roomByKey(room).solid);
       setPlaying(!instant);
       roomRef.current?.focus({ preventScroll: true });
       if (!instant) {
@@ -164,6 +177,7 @@ export function GrandHub() {
       }
     } else {
       scene?.leave();
+      if (prev) sound.leave();
       setPlaying(false);
       if (prev) menuRefs.current[prev]?.focus({ preventScroll: true });
     }
@@ -206,6 +220,17 @@ export function GrandHub() {
       <GrandCursor ring={false} />
       <div className="h-room-stage" ref={roomStageRef} aria-hidden />
 
+      <button
+        type="button"
+        className="h-sound"
+        aria-pressed={soundOn}
+        aria-label={soundOn ? "Turn sound off" : "Turn sound on"}
+        title={soundOn ? "Sound on" : "Sound off"}
+        onClick={toggleSound}
+      >
+        {soundOn ? <Volume2 className="w-4 h-4" aria-hidden /> : <VolumeX className="w-4 h-4" aria-hidden />}
+      </button>
+
       {/* ---------- the hub ---------- */}
       <main className="h-hub" data-hidden={!!room} aria-hidden={!!room}>
         <header className="h-hub-top">
@@ -216,12 +241,16 @@ export function GrandHub() {
         </header>
 
         <div className="h-hub-name">
+          <p className="h-hub-kicker">
+            <span className="g-eyebrow-rule" aria-hidden />
+            UX/UI Design Portfolio
+          </p>
           <h1 className="g-display">
             <span className="g-display-line">{firstName}</span>
             <span className="g-display-line g-display-line--gold">{rest.join(" ")}</span>
           </h1>
           <p className="h-hub-alias">
-            “{profile.nickname}” <span aria-hidden>·</span> choose a room
+            “{profile.nickname}” <span aria-hidden>·</span> Choose a shape to explore
           </p>
         </div>
 
@@ -239,7 +268,11 @@ export function GrandHub() {
               ref={(el) => {
                 menuRefs.current[r.key] = el;
               }}
-              onPointerEnter={(e) => e.pointerType === "mouse" && setHovered(r.solid)}
+              onPointerEnter={(e) => {
+                if (e.pointerType !== "mouse") return;
+                setHovered(r.solid);
+                sound.hover(r.solid);
+              }}
               onPointerLeave={() => setHovered(null)}
               onFocus={() => setHovered(r.solid)}
               onBlur={() => setHovered(null)}

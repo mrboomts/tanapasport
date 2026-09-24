@@ -6,7 +6,7 @@ import { projectDetails, projectSlug } from "../data/projectDetails";
  * element. `solid` indexes SOLIDS in ../grand/platonic.
  */
 export const ROOMS = [
-  { key: "index", num: "01", label: "Index", solid: 3 },
+  { key: "intro", num: "01", label: "Intro", solid: 3 },
   { key: "experience", num: "02", label: "Experience", solid: 1 },
   { key: "work", num: "03", label: "Work", solid: 0 },
   { key: "certifications", num: "04", label: "Certifications", solid: 2 },

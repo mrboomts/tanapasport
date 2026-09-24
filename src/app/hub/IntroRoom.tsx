@@ -4,9 +4,9 @@ import { images } from "../data/images";
 import { CountUp, getFigures } from "../grand/GrandHero";
 import { GrandJourney } from "../grand/GrandJourney";
 
-/** Room 01 — the hero's introduction, the organisations ticker, the
+/** Room 01, Intro — the hero's introduction, the organisations ticker, the
  *  figures and the career-switch band, minus the name (the hub has it). */
-export function IndexRoom() {
+export function IntroRoom() {
   const figures = getFigures();
 
   return (

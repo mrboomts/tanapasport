@@ -369,19 +369,18 @@ export function createHubScene(
   let restFrames = 0;
 
   function frame(now: number) {
+    // The starfield keeps drifting behind every room. On light devices,
+    // once a room has settled, it drops to ~30 fps to spare the battery.
+    const settled = lite && mode === "room" && (now - seqStart) / 1000 > SEQ_END + 0.5;
+    if (settled && ++restFrames % 2) {
+      raf = requestAnimationFrame(frame);
+      return;
+    }
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
     update(dt, now);
     renderer.render(scene, camera);
 
-    // On light devices there is no need to keep drawing a still picture
-    // behind a room someone is reading. It wakes on any state change.
-    const settled = lite && mode === "room" && (now - seqStart) / 1000 > SEQ_END + 1.2;
-    restFrames = settled ? restFrames + 1 : 0;
-    if (restFrames > 2) {
-      running = false;
-      return;
-    }
     raf = requestAnimationFrame(frame);
   }
 

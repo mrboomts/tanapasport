@@ -15,6 +15,8 @@
   background: var(--g-ink);
   color: var(--g-ivory);
   font-family: var(--font-body);
+  /* project cards open over the same starfield as everything else */
+  --modal-bg: rgba(10, 9, 18, 0.62);
 }
 
 .h-canvas {
@@ -94,6 +96,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+  padding-right: 56px; /* the sound toggle */
 }
 
 .h-hub-role {
@@ -120,6 +123,18 @@
   .h-hub-name .g-display {
     font-size: clamp(2.2rem, 3.6vw, 4.6rem);
   }
+}
+
+.h-hub-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.9rem;
+  font-size: clamp(13px, 1.25vw, 16px);
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--g-gold);
 }
 
 .h-hub-alias {
@@ -243,6 +258,51 @@
   }
 }
 
+/* ---------- Sound toggle ---------- */
+.h-sound {
+  position: absolute;
+  top: max(0.95rem, env(safe-area-inset-top));
+  right: 1rem;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(233, 200, 119, 0.4);
+  background: rgba(10, 9, 18, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--g-gold-lt);
+  cursor: pointer;
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.h-sound:hover,
+.h-sound:focus-visible {
+  background: rgba(233, 200, 119, 0.14);
+  border-color: var(--g-gold);
+  outline: none;
+}
+
+.h-sound[aria-pressed="true"] {
+  border-color: var(--g-gold);
+  box-shadow: 0 0 18px rgba(233, 200, 119, 0.25);
+}
+
+@media (min-width: 900px) {
+  .h-sound {
+    top: 1.75rem;
+    right: clamp(1.5rem, 4vw, 4.5rem);
+  }
+}
+
+body[data-modal-open="true"] .h-sound {
+  display: none;
+}
+
 /* ---------- Room ---------- */
 .h-room {
   position: absolute;
@@ -252,8 +312,9 @@
   overflow-x: hidden;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  /* dark enough to read on, light enough that the resting solid shows */
-  background: linear-gradient(180deg, rgba(10, 9, 18, 0.9), rgba(10, 9, 18, 0.74));
+  /* one background everywhere: the starfield and aurora carry through
+     every room, with only a light veil so body text keeps its contrast */
+  background: rgba(10, 9, 18, 0.3);
   outline: none;
   /* opacity only — a transform here would trap the project card's
      position:fixed inside the room */
@@ -277,8 +338,8 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: max(0.75rem, env(safe-area-inset-top)) var(--g-pad-x) 0.75rem;
-  background: rgba(10, 9, 18, 0.72);
+  padding: max(0.75rem, env(safe-area-inset-top)) calc(var(--g-pad-x) + 52px) 0.75rem var(--g-pad-x);
+  background: rgba(10, 9, 18, 0.6);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid rgba(233, 200, 119, 0.14);
@@ -395,4 +456,19 @@
   .h-hub {
     transition: none;
   }
+}
+
+/* A project card opens over the starfield, not over the list it came
+   from: hide the room's own content (the card is its .fixed sibling). */
+body[data-modal-open="true"] .h-room-bar,
+body[data-modal-open="true"] .h-room-body .g-section > :not(.fixed) {
+  visibility: hidden;
+}
+
+/* theme-grand forces the card to near-opaque ink; in the hub it sits over
+   the same starfield as every room instead */
+[data-theme="grand"] .h-root .fixed.inset-0 {
+  background: var(--modal-bg) !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
