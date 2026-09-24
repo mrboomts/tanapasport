@@ -17,8 +17,8 @@ import { SOLIDS } from "../grand/platonic";
  *                    packed as a cuboctahedron (centre + 12), every pair
  *                    joined — 78 lines. Seen down its 3-fold axis it
  *                    becomes the familiar flat figure.
- *   Flower of Life   a faint ring of 19 circles behind it, tilted like a
- *                    portal and turning on its own axis.
+ *   Flower of Life   the only circles: 19 of them, softer, set back behind
+ *                    the cube with a slight tilt, turning on its own axis.
  *
  * Choosing a room: that solid lifts off its slot and flies to the centre,
  * growing and spinning up, while the flower blooms, Metatron's spheres pop
@@ -169,7 +169,7 @@ export function createHubScene(
   // Flower of Life — a faint tilted, turning portal set back behind the cube
   const folTilt = new THREE.Group();
   folTilt.position.z = -0.9;
-  folTilt.rotation.set(-0.5, 0.38, 0);
+  folTilt.rotation.set(-0.22, 0.16, 0);
   sacredRoot.add(folTilt);
   const fol = new THREE.Group();
   folTilt.add(fol);
@@ -218,8 +218,8 @@ export function createHubScene(
   const metMat = track(lineMat(GOLD_LT));
   met.add(new THREE.LineSegments(metGeo, metMat));
 
-  // the 13 circles of the Fruit of Life, one round each node, always facing us
-  const nodeRingMat = track(lineMat(GOLD));
+  // a glowing node at each of the 13 centres (no circles round them: with
+  // the flower behind, two sets of circles read as a tangle)
   const nodeGlowMat = track(
     new THREE.SpriteMaterial({
       map: sprite,
@@ -235,11 +235,9 @@ export function createHubScene(
     g.position.copy(v);
     const glow = new THREE.Sprite(nodeGlowMat);
     glow.scale.setScalar(i === 0 ? 0.34 : 0.26);
-    const ringLoop = new THREE.LineLoop(circleGeo, nodeRingMat);
-    ringLoop.scale.setScalar(MET_D / 2);
-    g.add(glow, ringLoop);
+    g.add(glow);
     met.add(g);
-    return { g, ring: ringLoop, delay: 0.3 + (i === 0 ? 0 : 0.02 + (i - 1) * 0.014) };
+    return { g, delay: 0.3 + (i === 0 ? 0 : 0.02 + (i - 1) * 0.014) };
   });
 
   /* ---------- the five solids — the menu itself ---------- */
@@ -382,7 +380,6 @@ export function createHubScene(
     s: 0.001,
   };
 
-  const tmpQ = new THREE.Quaternion();
 
   // hold-and-drag turns the centre; it keeps its momentum when let go,
   // and the tilt drifts back toward level
@@ -491,14 +488,14 @@ export function createHubScene(
       balls.forEach((b, i) => {
         cur.pop[i] = easeOut((s - b.delay) / 0.2);
       });
-      cur.fol = 0.5 * ramp(s, 0.12, 0.25) * (1 - ramp(s, 0.85, 1.12));
+      cur.fol = 0.65 * ramp(s, 0.12, 0.25) * (1 - ramp(s, 0.85, 1.12));
       cur.metDraw = ramp(s, 0.36, 0.7);
       cur.met = ramp(s, 0.3, 0.4) * (1 - ramp(s, 0.9, 1.15));
       // swing round to the classic face-on view as the lines finish
       metSpin = mix(metSpinFrom, metSpinTo, easeInOut((s - 0.2) / 0.55));
     } else {
       const inHub = mode === "hub";
-      const goalFol = inHub ? (hover === null ? 0.2 : 0.3) : 0;
+      const goalFol = inHub ? (hover === null ? 0.34 : 0.45) : 0;
       const goalMet = inHub ? (hover === null ? 0.75 : 1) : 0;
       cur.fol += (goalFol - cur.fol) * rate;
       cur.met += (goalMet - cur.met) * rate;
@@ -521,14 +518,9 @@ export function createHubScene(
 
     met.visible = cur.met > 0.003;
     metMat.opacity = cur.met;
-    nodeRingMat.opacity = cur.met * 0.35;
     nodeGlowMat.opacity = cur.met * 0.9;
     metGeo.setDrawRange(0, Math.round(cur.metDraw * pairs.length) * 2);
-    balls.forEach((b, i) => {
-      b.g.scale.setScalar(Math.max(cur.pop[i], 0.001));
-      // keep each node's circle facing the viewer, like the flat figure
-      b.ring.quaternion.copy(b.g.getWorldQuaternion(tmpQ).invert()).multiply(camera.quaternion);
-    });
+    balls.forEach((b, i) => b.g.scale.setScalar(Math.max(cur.pop[i], 0.001)));
     metSpinG.rotation.y = metSpin;
     metSpinG.rotation.x = reduced ? 0.2 : Math.sin(clock * 0.21) * 0.25;
     if (inSeq) metSpinG.rotation.x *= 1 - ramp(s, 0.2, 0.75);
