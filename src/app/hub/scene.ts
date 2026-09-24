@@ -34,6 +34,9 @@ export type HubScene = {
   setStage(which: "hub" | "room", rect: Stage): void;
   setSlots(rects: (Stage | null)[]): void;
   setHover(solid: number | null): void;
+  /** Hold-and-drag on the centre: pixels moved since the last call. */
+  drag(dx: number, dy: number): void;
+  grab(held: boolean): void;
   enter(solid: number, opts?: { instant?: boolean }): void;
   leave(): void;
   skip(): void;
@@ -381,10 +384,13 @@ export function createHubScene(
 
   const tmpQ = new THREE.Quaternion();
 
-  let px = 0;
-  let py = 0;
-  let tpx = 0;
-  let tpy = 0;
+  // hold-and-drag turns the centre; it keeps its momentum when let go,
+  // and the tilt drifts back toward level
+  let yaw = 0;
+  let tilt = 0;
+  let yawVel = 0;
+  let tiltVel = 0;
+  let held = false;
 
   /**
    * A DOM rect → a centre in world units and a world radius. `reach` lets
@@ -465,15 +471,17 @@ export function createHubScene(
     const fast = reduced ? 1 : 1 - Math.exp(-dt * 14);
     const centre = hubPlace();
 
-    // pointer parallax
-    px += (tpx - px) * (1 - Math.exp(-dt * 3));
-    py += (tpy - py) * (1 - Math.exp(-dt * 3));
-    if (!reduced) {
-      sacredRoot.rotation.y = px * 0.35;
-      sacredRoot.rotation.x = py * 0.25;
-      dust.position.x = -px * 0.35;
-      dust.position.y = py * 0.22;
+    // drag: coast on momentum once let go, and settle the tilt
+    if (!held) {
+      yaw += yawVel * dt;
+      tilt += tiltVel * dt;
+      const drag = Math.exp(-dt * 2.2);
+      yawVel *= drag;
+      tiltVel *= drag;
+      tilt += (0 - tilt) * (1 - Math.exp(-dt * 0.9));
     }
+    sacredRoot.rotation.y = yaw;
+    sacredRoot.rotation.x = tilt;
 
     /* ----- centre layer ----- */
     if (inSeq) {
@@ -577,8 +585,6 @@ export function createHubScene(
       if (!visible) return;
       sol.root.position.set(sol.x, sol.y, 0);
       sol.root.scale.setScalar(sol.s);
-      sol.root.rotation.y = reduced ? 0 : px * 0.3;
-      sol.root.rotation.x = reduced ? 0 : py * 0.22;
       sol.edgeMat.opacity = sol.alpha;
       sol.faceMat.opacity = sol.alpha * (0.07 + sol.glow * 0.1);
       sol.dotMat.opacity = sol.alpha * 0.95;
@@ -621,16 +627,10 @@ export function createHubScene(
   }
 
   /* ---------- inputs ---------- */
-  const onPointer = (e: PointerEvent) => {
-    if (e.pointerType !== "mouse") return;
-    tpx = (e.clientX / W) * 2 - 1;
-    tpy = (e.clientY / H) * 2 - 1;
-  };
   const onResize = () => {
     resize();
     wake();
   };
-  window.addEventListener("pointermove", onPointer, { passive: true });
   window.addEventListener("resize", onResize);
   wake();
 
@@ -660,6 +660,23 @@ export function createHubScene(
     },
     setHover(solid) {
       hover = solid;
+      wake();
+    },
+    drag(dx, dy) {
+      const k = 0.009;
+      yaw += dx * k;
+      tilt = Math.max(-1.2, Math.min(1.2, tilt + dy * k));
+      // momentum from the latest movement (assumes ~60 events a second)
+      yawVel = yawVel * 0.5 + dx * k * 60 * 0.5;
+      tiltVel = tiltVel * 0.5 + dy * k * 60 * 0.5;
+      wake();
+    },
+    grab(h) {
+      held = h;
+      if (h) {
+        yawVel = 0;
+        tiltVel = 0;
+      }
       wake();
     },
     enter(solid, o) {
@@ -701,7 +718,6 @@ export function createHubScene(
     dispose() {
       cancelAnimationFrame(raf);
       running = false;
-      window.removeEventListener("pointermove", onPointer);
       window.removeEventListener("resize", onResize);
       disposables.forEach((d) => d.dispose());
       renderer.dispose();

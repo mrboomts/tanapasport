@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
-import { ArrowLeft, Volume2, VolumeX } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { profile } from "../data/portfolio";
 import { GrandCursor } from "../grand/GrandCursor";
 import { GrandExperience } from "../grand/GrandExperience";
@@ -10,6 +10,7 @@ import { GrandFooter } from "../grand/GrandFooter";
 import { IntroRoom } from "./IntroRoom";
 import { SolidIcon } from "./SolidIcon";
 import { sound } from "./sound";
+import { SoundMenu } from "./SoundMenu";
 import { ROOMS, roomByKey, useRoom, type RoomKey } from "./rooms";
 import type { HubScene } from "./scene";
 
@@ -76,22 +77,13 @@ export function GrandHub() {
   const menuRefs = useRef<Partial<Record<RoomKey, HTMLButtonElement | null>>>({});
   const slotRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const sceneRef = useRef<HubScene | null>(null);
+  const dragFrom = useRef<{ x: number; y: number } | null>(null);
   const [ready, setReady] = useState(false);
 
   const [hovered, setHovered] = useState<number | null>(null);
 
   const [playing, setPlaying] = useState(false);
-  const [soundOn, setSoundOn] = useState(false);
 
-  useEffect(() => {
-    sound.init();
-    setSoundOn(sound.enabled);
-  }, []);
-
-  const toggleSound = () => {
-    sound.setEnabled(!soundOn);
-    setSoundOn(!soundOn);
-  };
   const prevRoom = useRef<RoomKey | null | undefined>(undefined);
 
   /* ---------- load the scene (lazily: three is its own chunk) ---------- */
@@ -220,16 +212,7 @@ export function GrandHub() {
       <GrandCursor ring={false} />
       <div className="h-room-stage" ref={roomStageRef} aria-hidden />
 
-      <button
-        type="button"
-        className="h-sound"
-        aria-pressed={soundOn}
-        aria-label={soundOn ? "Turn sound off" : "Turn sound on"}
-        title={soundOn ? "Sound on" : "Sound off"}
-        onClick={toggleSound}
-      >
-        {soundOn ? <Volume2 className="w-4 h-4" aria-hidden /> : <VolumeX className="w-4 h-4" aria-hidden />}
-      </button>
+      <SoundMenu />
 
       {/* ---------- the hub ---------- */}
       <main className="h-hub" data-hidden={!!room} aria-hidden={!!room}>
@@ -254,7 +237,31 @@ export function GrandHub() {
           </p>
         </div>
 
-        <div className="h-stage" ref={hubStageRef} aria-hidden />
+        {/* hold (click or touch) and drag to turn the centre */}
+        <div
+          className="h-stage"
+          ref={hubStageRef}
+          aria-hidden
+          onPointerDown={(e) => {
+            e.currentTarget.setPointerCapture(e.pointerId);
+            dragFrom.current = { x: e.clientX, y: e.clientY };
+            sceneRef.current?.grab(true);
+          }}
+          onPointerMove={(e) => {
+            const from = dragFrom.current;
+            if (!from) return;
+            sceneRef.current?.drag(e.clientX - from.x, e.clientY - from.y);
+            dragFrom.current = { x: e.clientX, y: e.clientY };
+          }}
+          onPointerUp={() => {
+            dragFrom.current = null;
+            sceneRef.current?.grab(false);
+          }}
+          onPointerCancel={() => {
+            dragFrom.current = null;
+            sceneRef.current?.grab(false);
+          }}
+        />
 
         {/* The solids are the menu. With WebGL the scene draws them over
             each slot; without it, a static line drawing stands in. */}

@@ -8,12 +8,16 @@
  * "hall" is a generated impulse response (decaying stereo noise) fed by a
  * send from every voice, which is most of what makes it sound big.
  *
- * Off by default (browsers block sound before a gesture anyway, and a
- * portfolio opened at work should not start humming). The visitor's choice
- * is remembered; if it was "on", the context resumes on their first tap.
+ * Two independent switches: the background drone ("BGM") and the effects
+ * (hover, fly-in, back). Both off by default — browsers block sound before
+ * a gesture anyway, and a portfolio opened at work should not start
+ * humming. Each choice is remembered; if either was on, the audio resumes
+ * on the visitor's first tap.
  */
 
-const KEY = "tanapas-sound";
+const KEYS = { bgm: "tanapas-bgm", sfx: "tanapas-sfx" } as const;
+type Channel = keyof typeof KEYS;
+const DRONE_LEVEL = 0.5;
 
 let ctx: AudioContext | null = null;
 let master: GainNode | null = null;
@@ -21,7 +25,8 @@ let dry: GainNode | null = null;
 let hall: GainNode | null = null;
 let drone: GainNode | null = null;
 let noise: AudioBuffer | null = null;
-let enabled = false;
+const on = { bgm: false, sfx: false };
+const anyOn = () => on.bgm || on.sfx;
 
 // In development a code reload re-runs this module; close the old context
 // so its drone can't carry on playing out of reach of the mute button.
@@ -31,17 +36,17 @@ if (import.meta.hot) {
   });
 }
 
-function readPref() {
+function readPref(ch: Channel) {
   try {
-    return localStorage.getItem(KEY) === "on";
+    return localStorage.getItem(KEYS[ch]) === "on";
   } catch {
     return false;
   }
 }
 
-function writePref(on: boolean) {
+function writePref(ch: Channel, value: boolean) {
   try {
-    localStorage.setItem(KEY, on ? "on" : "off");
+    localStorage.setItem(KEYS[ch], value ? "on" : "off");
   } catch {
     /* private mode — just don't remember */
   }
@@ -96,7 +101,7 @@ function ensure() {
   document.addEventListener("visibilitychange", () => {
     if (!ctx) return;
     if (document.hidden) void ctx.suspend();
-    else if (enabled) void ctx.resume();
+    else if (anyOn()) void ctx.resume();
   });
   return ctx;
 }
@@ -116,7 +121,7 @@ function out(node: AudioNode, send = 0.6) {
  */
 function buildDrone(c: AudioContext) {
   drone = c.createGain();
-  drone.gain.value = 0.5;
+  drone.gain.value = on.bgm ? DRONE_LEVEL : 0;
   out(drone, 0.9);
 
   const breathe = c.createBiquadFilter();
@@ -315,43 +320,60 @@ function choir(at: number, freqs: number[], gain: number, hold: number) {
 /** Each shape rings on its own step of D minor. */
 const ROOTS = [146.83, 164.81, 174.61, 196, 220];
 
-const live = () => enabled && ctx && ctx.state === "running";
+const live = () => on.sfx && ctx && ctx.state === "running";
+
+function fadeDrone(to: number, seconds: number) {
+  if (!ctx || !drone) return;
+  const t = ctx.currentTime;
+  drone.gain.cancelScheduledValues(t);
+  drone.gain.setValueAtTime(drone.gain.value, t);
+  drone.gain.linearRampToValueAtTime(to, t + seconds);
+}
+
+/** Bring the audio up (or down) to match the switches. */
+function apply(fade: number) {
+  if (anyOn()) {
+    if (!ensure()) return;
+    void ctx!.resume();
+    fadeMaster(0.55, fade);
+    fadeDrone(on.bgm ? DRONE_LEVEL : 0, fade);
+  } else if (ctx) {
+    fadeMaster(0, 0.4);
+    // then stop the audio clock outright, so nothing can keep humming
+    const c = ctx;
+    window.setTimeout(() => {
+      if (!anyOn() && c.state === "running") void c.suspend();
+    }, 450);
+  }
+}
 
 export const sound = {
-  get enabled() {
-    return enabled;
+  get bgm() {
+    return on.bgm;
+  },
+  get sfx() {
+    return on.sfx;
   },
 
-  /** Read the saved choice; if it was on, start on the first gesture. */
+  /** Read the saved choices; if either was on, start on the first gesture. */
   init() {
-    if (!readPref()) return;
-    enabled = true;
+    on.bgm = readPref("bgm");
+    on.sfx = readPref("sfx");
+    if (!anyOn()) return;
     const start = () => {
       window.removeEventListener("pointerdown", start);
       window.removeEventListener("keydown", start);
-      if (!enabled || !ensure()) return;
-      void ctx!.resume();
-      fadeMaster(0.55, 3);
+      apply(3);
     };
     window.addEventListener("pointerdown", start);
     window.addEventListener("keydown", start);
   },
 
-  setEnabled(on: boolean) {
-    enabled = on;
-    writePref(on);
-    if (on) {
-      if (!ensure()) return;
-      void ctx!.resume();
-      fadeMaster(0.55, 2);
-    } else {
-      fadeMaster(0, 0.4);
-      // then stop the audio clock outright, so nothing can keep humming
-      const c = ctx;
-      window.setTimeout(() => {
-        if (!enabled && c && c.state === "running") void c.suspend();
-      }, 450);
-    }
+  set(ch: Channel, value: boolean) {
+    on[ch] = value;
+    writePref(ch, value);
+    if (ch === "bgm" && !value) fadeDrone(0, 0.5);
+    apply(1.5);
   },
 
   /** Hover: a soft struck bowl with a breath of air — quiet, low, resonant. */
@@ -379,12 +401,12 @@ export const sound = {
     // gold dust — embers and a falling rush
     sparks(t + 0.95, 0.5, 40, 0.14);
     rush(t + 0.95, 0.7, 4200, 700, 0.1);
-    // the drone leans in under the moment
-    if (drone) {
+    // the drone (if it is on) leans in under the moment
+    if (drone && on.bgm) {
       drone.gain.cancelScheduledValues(t);
       drone.gain.setValueAtTime(drone.gain.value, t);
       drone.gain.linearRampToValueAtTime(0.85, t + 0.6);
-      drone.gain.linearRampToValueAtTime(0.5, t + 3);
+      drone.gain.linearRampToValueAtTime(DRONE_LEVEL, t + 3);
     }
   },
 
