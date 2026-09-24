@@ -1,29 +1,24 @@
 import * as THREE from "three";
 import { ConvexGeometry } from "three/examples/jsm/geometries/ConvexGeometry.js";
-import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
-import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { SOLIDS } from "../grand/platonic";
 
 /**
  * The hub's WebGL scene. Loaded lazily (this module is the only importer of
  * three), so the first paint of the page never waits on it.
  *
- * Everything is real geometry, lit: struts are metal tubes and nodes are
- * metal spheres, reflecting a generated studio environment, with a warm key
- * light and a violet rim to match the aurora. Glow is a second, wider,
- * additive tube around each strut (no post-processing, so the canvas stays
- * transparent over the CSS aurora and phones stay cool), and depth fog dims
- * whatever is further away so the eye reads the volume.
+ * Everything is drawn in fine gold line, additive, so it glows without
+ * post-processing (the canvas stays transparent over the CSS aurora), and
+ * depth fog dims whatever is further away so the eye reads the volume.
  *
  * The five Platonic solids *are* the menu: each floats on a "slot" — a DOM
  * rect inside its menu button. At the centre:
  *
- *   Flower of Life   a ring of 19 gold circles, tilted like a portal and
- *                    turning on its own axis, set back behind…
- *   Metatron's Cube  in three dimensions: 13 spheres packed as a
- *                    cuboctahedron (centre + 12), every pair joined — 78
- *                    struts. Seen down its 3-fold axis it becomes the
- *                    familiar flat figure.
+ *   Metatron's Cube  the lead: in three dimensions, 13 glowing nodes
+ *                    packed as a cuboctahedron (centre + 12), every pair
+ *                    joined — 78 lines. Seen down its 3-fold axis it
+ *                    becomes the familiar flat figure.
+ *   Flower of Life   a faint ring of 19 circles behind it, tilted like a
+ *                    portal and turning on its own axis.
  *
  * Choosing a room: that solid lifts off its slot and flies to the centre,
  * growing and spinning up, while the flower blooms, Metatron's spheres pop
@@ -47,7 +42,6 @@ export type HubScene = {
 
 const GOLD = new THREE.Color("#e9c877");
 const GOLD_LT = new THREE.Color("#f7e2a8");
-const METAL = new THREE.Color("#ffd27a");
 const INK = new THREE.Color("#0a0912");
 
 /** The centre layer is built inside this radius. */
@@ -96,28 +90,40 @@ function flowerCenters(R: number) {
   return out;
 }
 
-/** One strut: an open cylinder from a to b. */
-function strut(a: THREE.Vector3, b: THREE.Vector3, r: number, radial: number) {
-  const g = new THREE.CylinderGeometry(r, r, a.distanceTo(b), radial, 1, true);
-  const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), b.clone().sub(a).normalize());
-  g.applyMatrix4(new THREE.Matrix4().compose(a.clone().add(b).multiplyScalar(0.5), q, new THREE.Vector3(1, 1, 1)));
-  return g;
+function unitCircle(segments = 96) {
+  const pts: THREE.Vector3[] = [];
+  for (let i = 0; i < segments; i++) {
+    const a = (i / segments) * Math.PI * 2;
+    pts.push(new THREE.Vector3(Math.cos(a), Math.sin(a), 0));
+  }
+  return new THREE.BufferGeometry().setFromPoints(pts);
 }
 
-/** All struts of a frame merged into one geometry, in order (so draw range can "draw" them). */
-function frame(pairs: [THREE.Vector3, THREE.Vector3][], r: number, radial: number) {
-  const parts = pairs.map(([a, b]) => strut(a, b, r, radial));
-  const merged = mergeGeometries(parts)!;
-  parts.forEach((p) => p.dispose());
-  return { geo: merged, perStrut: radial * 6 };
+function lineMat(color: THREE.Color, opacity = 0) {
+  return new THREE.LineBasicMaterial({
+    color,
+    transparent: true,
+    opacity,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  });
+}
+
+/** Line segments for a list of pairs, in order (so draw range can "draw" them). */
+function segmentsGeo(pairs: [THREE.Vector3, THREE.Vector3][]) {
+  const pos: number[] = [];
+  for (const [a, b] of pairs) pos.push(a.x, a.y, a.z, b.x, b.y, b.z);
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  return g;
 }
 
 type SolidObj = {
   root: THREE.Group;
   spin: THREE.Group;
-  metal: THREE.MeshStandardMaterial;
-  halo: THREE.MeshBasicMaterial;
-  face: THREE.MeshBasicMaterial;
+  edgeMat: THREE.LineBasicMaterial;
+  faceMat: THREE.MeshBasicMaterial;
+  dotMat: THREE.PointsMaterial;
   segments: [THREE.Vector3, THREE.Vector3][];
   x: number;
   y: number;
@@ -138,8 +144,6 @@ export function createHubScene(
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, lite ? 1.75 : 2));
   renderer.setClearColor(0x000000, 0);
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.15;
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
@@ -155,45 +159,11 @@ export function createHubScene(
   };
   const sprite = track(dustTexture());
 
-  // reflections + light
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  const env = track(pmrem.fromScene(new RoomEnvironment(), 0.04).texture);
-  pmrem.dispose();
-  scene.environment = env;
-  const key = new THREE.DirectionalLight(0xfff0d6, 2.2);
-  key.position.set(-3, 4, 5);
-  const rim = new THREE.PointLight(0x7c5cff, 18, 14, 1.6);
-  rim.position.set(4, -2, -2);
-  scene.add(key, rim, new THREE.AmbientLight(0x2a2440, 0.6));
-
-  const metalMat = (opacity = 0) =>
-    track(
-      new THREE.MeshStandardMaterial({
-        color: METAL,
-        metalness: 1,
-        roughness: 0.26,
-        envMapIntensity: 1.25,
-        transparent: true,
-        opacity,
-      }),
-    );
-  const haloMat = (color = GOLD, opacity = 0) =>
-    track(
-      new THREE.MeshBasicMaterial({
-        color,
-        transparent: true,
-        opacity,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-      }),
-    );
-  const radial = lite ? 5 : 8;
-
   /* ---------- centre ---------- */
   const sacredRoot = new THREE.Group();
   scene.add(sacredRoot);
 
-  // Flower of Life — a tilted, turning portal set back behind the cube
+  // Flower of Life — a faint tilted, turning portal set back behind the cube
   const folTilt = new THREE.Group();
   folTilt.position.z = -0.9;
   folTilt.rotation.set(-0.5, 0.38, 0);
@@ -202,29 +172,21 @@ export function createHubScene(
   folTilt.add(fol);
 
   const folR = 0.55;
-  const torusGeo = track(new THREE.TorusGeometry(1, 0.022, lite ? 5 : 8, lite ? 72 : 110));
-  const torusHaloGeo = track(new THREE.TorusGeometry(1, 0.075, 4, lite ? 60 : 90));
-  const folMetal = metalMat();
-  const folHalo = haloMat();
-  const ring = (r: number, glow = true) => {
-    const g = new THREE.Group();
-    g.add(new THREE.Mesh(torusGeo, folMetal));
-    if (glow) g.add(new THREE.Mesh(torusHaloGeo, folHalo));
-    g.scale.setScalar(r);
-    return g;
-  };
+  const circleGeo = track(unitCircle(lite ? 72 : 110));
+  const folMat = track(lineMat(GOLD));
   const petals = flowerCenters(folR).map(({ c, ring: n }, i) => {
-    const g = ring(folR);
-    g.position.set(c[0], c[1], 0);
-    fol.add(g);
+    const loop = new THREE.LineLoop(circleGeo, folMat);
+    loop.position.set(c[0], c[1], 0);
+    loop.scale.setScalar(folR);
+    fol.add(loop);
     // centre first, then each ring, going round
-    return { g, delay: n === 0 ? 0 : n === 1 ? 0.05 + (i - 1) * 0.018 : 0.14 + (i - 7) * 0.012 };
+    return { g: loop, delay: n === 0 ? 0 : n === 1 ? 0.05 + (i - 1) * 0.018 : 0.14 + (i - 7) * 0.012 };
   });
-  // the rim is scaled 3×, so its glow would be 3× as thick — leave it bare
-  const folRim = ring(folR * 3, false);
+  const folRim = new THREE.LineLoop(circleGeo, folMat);
+  folRim.scale.setScalar(folR * 3);
   fol.add(folRim);
 
-  // Metatron's Cube, in 3D: 13 spheres packed as a cuboctahedron
+  // Metatron's Cube, in 3D: 13 nodes packed as a cuboctahedron
   const MET_D = 1.3;
   const metSpinG = new THREE.Group();
   sacredRoot.add(metSpinG);
@@ -246,21 +208,15 @@ export function createHubScene(
 
   const pairs: [THREE.Vector3, THREE.Vector3][] = [];
   for (let i = 0; i < nodes.length; i++) for (let j = i + 1; j < nodes.length; j++) pairs.push([nodes[i], nodes[j]]);
-  // outer struts first, so the drawing grows from the rim inward
-  pairs.sort((p, q) => p[0].length() + p[1].length() < q[0].length() + q[1].length() ? 1 : -1);
+  // outer lines first, so the drawing grows from the rim inward
+  pairs.sort((p, q) => (p[0].length() + p[1].length() < q[0].length() + q[1].length() ? 1 : -1));
 
-  const metFrame = frame(pairs, 0.01, radial);
-  const metHaloFrame = frame(pairs, 0.032, 4);
-  track(metFrame.geo);
-  track(metHaloFrame.geo);
-  const metMetal = metalMat();
-  const metHalo = haloMat(GOLD_LT);
-  const metLines = new THREE.Mesh(metFrame.geo, metMetal);
-  const metLinesHalo = new THREE.Mesh(metHaloFrame.geo, metHalo);
-  met.add(metLines, metLinesHalo);
+  const metGeo = track(segmentsGeo(pairs));
+  const metMat = track(lineMat(GOLD_LT));
+  met.add(new THREE.LineSegments(metGeo, metMat));
 
-  const ballGeo = track(new THREE.SphereGeometry(1, lite ? 14 : 24, lite ? 10 : 16));
-  const nodeMetal = metalMat();
+  // the 13 circles of the Fruit of Life, one round each node, always facing us
+  const nodeRingMat = track(lineMat(GOLD));
   const nodeGlowMat = track(
     new THREE.SpriteMaterial({
       map: sprite,
@@ -274,13 +230,13 @@ export function createHubScene(
   const balls = nodes.map((v, i) => {
     const g = new THREE.Group();
     g.position.copy(v);
-    const ball = new THREE.Mesh(ballGeo, nodeMetal);
-    ball.scale.setScalar(i === 0 ? 0.14 : 0.11);
     const glow = new THREE.Sprite(nodeGlowMat);
-    glow.scale.setScalar(0.55);
-    g.add(ball, glow);
+    glow.scale.setScalar(i === 0 ? 0.34 : 0.26);
+    const ringLoop = new THREE.LineLoop(circleGeo, nodeRingMat);
+    ringLoop.scale.setScalar(MET_D / 2);
+    g.add(glow, ringLoop);
     met.add(g);
-    return { g, delay: 0.3 + (i === 0 ? 0 : 0.02 + (i - 1) * 0.014) };
+    return { g, ring: ringLoop, delay: 0.3 + (i === 0 ? 0 : 0.02 + (i - 1) * 0.014) };
   });
 
   /* ---------- the five solids — the menu itself ---------- */
@@ -293,21 +249,10 @@ export function createHubScene(
     const verts = s.vertices.map((v) => new THREE.Vector3(v[0], v[1], v[2]));
     const segments = s.edges.map(([a, b]) => [verts[a], verts[b]] as [THREE.Vector3, THREE.Vector3]);
 
-    const metal = metalMat();
-    const halo = haloMat();
-    const f = frame(segments, 0.034, radial);
-    const h = frame(segments, 0.075, 4);
-    track(f.geo);
-    track(h.geo);
-    spin.add(new THREE.Mesh(f.geo, metal), new THREE.Mesh(h.geo, halo));
+    const edgeMat = track(lineMat(GOLD_LT));
+    spin.add(new THREE.LineSegments(track(segmentsGeo(segments)), edgeMat));
 
-    const joints = mergeGeometries(
-      verts.map((v) => new THREE.SphereGeometry(0.075, 12, 8).translate(v.x, v.y, v.z)),
-    )!;
-    track(joints);
-    spin.add(new THREE.Mesh(joints, metal));
-
-    const face = track(
+    const faceMat = track(
       new THREE.MeshBasicMaterial({
         color: GOLD,
         transparent: true,
@@ -317,10 +262,23 @@ export function createHubScene(
         side: THREE.DoubleSide,
       }),
     );
-    spin.add(new THREE.Mesh(track(new ConvexGeometry(verts)), face));
+    spin.add(new THREE.Mesh(track(new ConvexGeometry(verts)), faceMat));
+
+    const dotMat = track(
+      new THREE.PointsMaterial({
+        map: sprite,
+        color: GOLD_LT,
+        size: 0.16,
+        transparent: true,
+        opacity: 0,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      }),
+    );
+    spin.add(new THREE.Points(track(new THREE.BufferGeometry().setFromPoints(verts)), dotMat));
 
     spin.rotation.set(0.45 + n * 0.13, n * 1.1, 0);
-    return { root, spin, metal, halo, face, segments, x: 0, y: 0, s: 0.001, alpha: 0, glow: 0, placed: false };
+    return { root, spin, edgeMat, faceMat, dotMat, segments, x: 0, y: 0, s: 0.001, alpha: 0, glow: 0, placed: false };
   });
 
   /* ---------- gold dust: ambient field ---------- */
@@ -421,6 +379,8 @@ export function createHubScene(
     s: 0.001,
   };
 
+  const tmpQ = new THREE.Quaternion();
+
   let px = 0;
   let py = 0;
   let tpx = 0;
@@ -457,7 +417,7 @@ export function createHubScene(
     const r = place(stages.room);
     return { x: r.x, y: r.y, s: r.s * 0.8 };
   };
-  const restAlpha = () => (lite ? 0.26 : 0.32);
+  const restAlpha = () => (lite ? 0.35 : 0.5);
 
   function resize() {
     W = canvas.clientWidth || window.innerWidth;
@@ -523,15 +483,15 @@ export function createHubScene(
       balls.forEach((b, i) => {
         cur.pop[i] = easeOut((s - b.delay) / 0.2);
       });
-      cur.fol = 0.85 * ramp(s, 0.12, 0.25) * (1 - ramp(s, 0.85, 1.12));
+      cur.fol = 0.5 * ramp(s, 0.12, 0.25) * (1 - ramp(s, 0.85, 1.12));
       cur.metDraw = ramp(s, 0.36, 0.7);
-      cur.met = 0.75 * ramp(s, 0.3, 0.4) * (1 - ramp(s, 0.9, 1.15));
+      cur.met = ramp(s, 0.3, 0.4) * (1 - ramp(s, 0.9, 1.15));
       // swing round to the classic face-on view as the lines finish
       metSpin = mix(metSpinFrom, metSpinTo, easeInOut((s - 0.2) / 0.55));
     } else {
       const inHub = mode === "hub";
-      const goalFol = inHub ? (hover === null ? 0.6 : 0.85) : 0;
-      const goalMet = inHub ? (hover === null ? 0.55 : 0.8) : 0;
+      const goalFol = inHub ? (hover === null ? 0.2 : 0.3) : 0;
+      const goalMet = inHub ? (hover === null ? 0.75 : 1) : 0;
       cur.fol += (goalFol - cur.fol) * rate;
       cur.met += (goalMet - cur.met) * rate;
       cur.metDraw += (1 - cur.metDraw) * rate;
@@ -548,21 +508,19 @@ export function createHubScene(
     petals.forEach((p, i) => p.g.scale.setScalar(folR * Math.max(cur.bloom[i], 0.001)));
     folRim.scale.setScalar(folR * 3 * Math.max(inSeq ? ramp(s, 0.28, 0.55) : 1, 0.001));
     fol.visible = cur.fol > 0.003;
-    folMetal.opacity = cur.fol;
-    folMetal.depthWrite = cur.fol > 0.97;
-    folHalo.opacity = cur.fol * 0.16;
+    folMat.opacity = cur.fol;
     if (!reduced) fol.rotation.z += dt * 0.08;
 
     met.visible = cur.met > 0.003;
-    metMetal.opacity = cur.met;
-    metMetal.depthWrite = cur.met > 0.97;
-    metHalo.opacity = cur.met * 0.1;
-    nodeMetal.opacity = cur.met;
-    nodeGlowMat.opacity = cur.met * 0.5;
-    const drawn = Math.round(cur.metDraw * pairs.length);
-    metFrame.geo.setDrawRange(0, drawn * metFrame.perStrut);
-    metHaloFrame.geo.setDrawRange(0, drawn * metHaloFrame.perStrut);
-    balls.forEach((b, i) => b.g.scale.setScalar(Math.max(cur.pop[i], 0.001)));
+    metMat.opacity = cur.met;
+    nodeRingMat.opacity = cur.met * 0.35;
+    nodeGlowMat.opacity = cur.met * 0.9;
+    metGeo.setDrawRange(0, Math.round(cur.metDraw * pairs.length) * 2);
+    balls.forEach((b, i) => {
+      b.g.scale.setScalar(Math.max(cur.pop[i], 0.001));
+      // keep each node's circle facing the viewer, like the flat figure
+      b.ring.quaternion.copy(b.g.getWorldQuaternion(tmpQ).invert()).multiply(camera.quaternion);
+    });
     metSpinG.rotation.y = metSpin;
     metSpinG.rotation.x = reduced ? 0.2 : Math.sin(clock * 0.21) * 0.25;
     if (inSeq) metSpinG.rotation.x *= 1 - ramp(s, 0.2, 0.75);
@@ -621,11 +579,10 @@ export function createHubScene(
       sol.root.scale.setScalar(sol.s);
       sol.root.rotation.y = reduced ? 0 : px * 0.3;
       sol.root.rotation.x = reduced ? 0 : py * 0.22;
-      sol.metal.opacity = sol.alpha;
-      sol.metal.depthWrite = sol.alpha > 0.97;
-      sol.metal.emissive.copy(GOLD).multiplyScalar(0.1 + sol.glow * 0.12);
-      sol.halo.opacity = sol.alpha * (0.12 + sol.glow * 0.06);
-      sol.face.opacity = sol.alpha * (0.04 + sol.glow * 0.02);
+      sol.edgeMat.opacity = sol.alpha;
+      sol.faceMat.opacity = sol.alpha * (0.07 + sol.glow * 0.1);
+      sol.dotMat.opacity = sol.alpha * 0.95;
+      sol.dotMat.size = 0.12 + Math.min(sol.s, 1.2) * 0.06;
       if (!reduced) {
         const b = i === target ? boost : 0;
         sol.spin.rotation.y += dt * (0.3 + sol.glow * 0.6 + b);
