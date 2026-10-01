@@ -33,7 +33,7 @@ import dealerVisionCover from "../../imports/DealerVisionPage/dealervision-card-
 import hMeterCover from "../../imports/HMeterPage/hmeter-card-cover.png";
 import pdpaAmarinCover from "../../imports/PdpaAmarinPage/pdpa-amarin-card-cover.png";
 import oneTruthCover from "../../imports/OneTruthPage/1truth-card-cover.png";
-import sasCardGameCover from "../../imports/SasCardGamePage/sas-cardgame-card-cover.png";
+import sasCardGameCover from "../../imports/SasCardGamePage/sas-logo-cover.webp";
 import choobiniBanner from "../../imports/Choobini/choobini-banner.webp";
 import choobiniThumb from "../../imports/Choobini/choobini-thumb.webp";
 import peaLogin from "../../imports/CaseStudies/pea-login.webp";
@@ -997,13 +997,8 @@ export const projectDetails: Record<string, ProjectDetail> = {
     bg: sasCardGameCover,
     cover: sasCardGameCover,
     description: "Soul & Spell is a personal card game project, covering the visual design and card system.",
-    actions: [
-      {
-        label: "View Figma",
-        href: "https://www.figma.com/design/8rqARVPGs1bAk5WN7dI3Zo/Card?node-id=0-1&p=f&t=0He1qeVHKHK1DSFB-0",
-        variant: "primary",
-      },
-    ],
+    // /sas is a short link on this site that forwards to the game
+    actions: [{ label: "Play the game", href: "/sas", variant: "primary" }],
   },
   Choobini: {
     title: "Choobini",

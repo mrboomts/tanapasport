@@ -24,7 +24,7 @@ import projDealerVision from "../../imports/DealerVisionPage/dealervision-card-c
 import projHMeter from "../../imports/HMeterPage/hmeter-card-cover.png";
 import projPdpaAmarin from "../../imports/PdpaAmarinPage/pdpa-amarin-card-cover.png";
 import projOneTruth from "../../imports/OneTruthPage/1truth-card-cover.png";
-import projSasCardGame from "../../imports/SasCardGamePage/sas-cardgame-card-cover.png";
+import projSasCardGame from "../../imports/SasCardGamePage/sas-logo-cover.webp";
 import projChoobini from "../../imports/Choobini/choobini-thumb.webp";
 
 import certVanderbilt from "../../imports/Desktop1-1/5be78f1a79cbef3bc564fa68c6b139f2f752b153.png";
