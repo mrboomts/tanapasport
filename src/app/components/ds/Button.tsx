@@ -28,13 +28,16 @@ export function Button({
 }) {
   const s = styles[variant];
   const Comp: any = href ? motion.a : motion.button;
+  // external links and on-site short links (like /sas) open in a new tab;
+  // in-page #anchors stay in this one
+  const newTab = !!href && (href.startsWith("http") || href.startsWith("/"));
   return (
     <Comp
       href={href}
       onClick={onClick}
       data-variant={variant}
-      target={href?.startsWith("http") ? "_blank" : undefined}
-      rel={href?.startsWith("http") ? "noopener noreferrer" : undefined}
+      target={newTab ? "_blank" : undefined}
+      rel={newTab ? "noopener noreferrer" : undefined}
       className={`inline-flex items-center justify-center gap-2 rounded-[10px] border px-5 py-2.5 font-display text-base whitespace-nowrap transition hover:brightness-110 ${
         fullWidth ? "w-full" : ""
       } ${className}`}
