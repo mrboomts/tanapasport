@@ -147,6 +147,8 @@ export type CaseStudy = {
 
 export type ProjectDetail = {
   title: string;
+  /** shown as "Role" in the case-study header; defaults to UX/UI Designer */
+  role?: string;
   bg: string;
   cover: string;
   coverB?: string;
@@ -228,7 +230,7 @@ export function buildStudy(title: string, detail: ProjectDetail): CaseStudy {
     }
   }
 
-  const meta = [{ label: "Role", value: "UX/UI Designer" }];
+  const meta = [{ label: "Role", value: detail.role ?? "UX/UI Designer" }];
   if (company) meta.push({ label: "At", value: company });
   if (project?.period) meta.push({ label: "Period", value: project.period });
   if (project?.type) meta.push({ label: "Platform", value: project.type });
@@ -994,6 +996,7 @@ export const projectDetails: Record<string, ProjectDetail> = {
   },
   "SAS Card game": {
     title: "Soul & Spell",
+    role: "Owner & Solo Developer — game design, UX/UI, art and code",
     bg: sasCardGameCover,
     cover: sasCardGameCover,
     description:
