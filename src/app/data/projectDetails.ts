@@ -996,7 +996,8 @@ export const projectDetails: Record<string, ProjectDetail> = {
     title: "Soul & Spell",
     bg: sasCardGameCover,
     cover: sasCardGameCover,
-    description: "Soul & Spell is a personal card game project, covering the visual design and card system.",
+    description:
+      "Soul and Spell (SAS) is a web trading card game I designed and built end to end — the rules, the card system and every screen. Players summon Souls (monster cards across seven elements, each with Attack, Defense and Speed) onto attack and defense lines, then power them up by attaching up to four Spells. Stars are the single resource: they pay for each card, refill every turn, and also keep score — let the stars piling up in your Tomb reach 16 and you lose. It's playable in the browser on desktop and mobile.",
     // /sas is a short link on this site that forwards to the game
     actions: [{ label: "Play the game", href: "/sas", variant: "primary" }],
   },
