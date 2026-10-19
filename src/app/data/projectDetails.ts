@@ -987,12 +987,16 @@ export const projectDetails: Record<string, ProjectDetail> = {
   },
   "1truth": {
     title: "1truth",
+    role: "Owner, Designer & YouTube Video Creator",
     bg: oneTruthCover,
     cover: oneTruthCover,
     description:
-      "1truth is a website about the universe's truths — everything about the cosmos and existence that humans should know.",
+      "1truth is a website about the universe's truths — everything about the cosmos and existence that humans should know. I also create the 1truth YouTube channel, turning the same ideas into videos.",
     noteRed: "* Please read the terms and consider your readiness before viewing.",
-    actions: [{ label: "Visit website", href: "https://1truth.io", variant: "primary" }],
+    actions: [
+      { label: "Visit website", href: "https://1truth.io", variant: "primary" },
+      { label: "Watch on YouTube", href: "https://www.youtube.com/@1truthio", variant: "secondary" },
+    ],
   },
   "SAS Card game": {
     title: "Soul & Spell",
