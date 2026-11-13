@@ -700,3 +700,67 @@ body[data-modal-open="true"] .h-room-body .g-section > :not(.fixed) {
     top: max(0.6rem, env(safe-area-inset-top));
   }
 }
+
+/* ============================================================
+   Scroll parallax — driven by each element's own trip through
+   its scroller (CSS view timelines: the room, or a project card),
+   so no JS and nothing follows the mouse. Gentle by design; off
+   for reduced motion and in browsers without view timelines.
+   ============================================================ */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* section heads: the big outline numeral lags behind its title */
+    .h-room .g-section-num {
+      animation: h-par-numeral linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+
+    /* project cards: the hero frame settles in, scaling down a touch */
+    .g-cs-hero > * {
+      animation: h-par-hero linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+
+    /* screens alternate sides — and speeds — as you read down */
+    .g-cs-screen .g-cs-media > *,
+    .g-cs-pairitem > :first-child {
+      animation: h-par-slow linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+    .g-cs-screen[data-side="right"] .g-cs-media > *,
+    .g-cs-pairitem:nth-child(even) > :first-child {
+      animation-name: h-par-fast;
+    }
+  }
+}
+
+@keyframes h-par-numeral {
+  from { transform: translateY(46px); }
+  to   { transform: translateY(-46px); }
+}
+
+@keyframes h-par-hero {
+  from { transform: translateY(28px) scale(1.04); }
+  to   { transform: translateY(-28px) scale(0.98); }
+}
+
+@keyframes h-par-slow {
+  from { transform: translateY(26px); }
+  to   { transform: translateY(-26px); }
+}
+
+@keyframes h-par-fast {
+  from { transform: translateY(54px); }
+  to   { transform: translateY(-54px); }
+}
+
+/* phones: half the travel, so long pages don't feel seasick */
+@media (max-width: 767px) {
+  @keyframes h-par-numeral { from { transform: translateY(22px); } to { transform: translateY(-22px); } }
+  @keyframes h-par-slow    { from { transform: translateY(12px); } to { transform: translateY(-12px); } }
+  @keyframes h-par-fast    { from { transform: translateY(26px); } to { transform: translateY(-26px); } }
+  @keyframes h-par-hero    { from { transform: translateY(14px) scale(1.02); } to { transform: translateY(-14px) scale(0.99); } }
+}

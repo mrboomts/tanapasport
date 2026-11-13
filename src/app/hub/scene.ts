@@ -37,6 +37,8 @@ export type HubScene = {
   /** Hold-and-drag on the centre: pixels moved since the last call. */
   drag(dx: number, dy: number): void;
   grab(held: boolean): void;
+  /** The open room's scroll position, in CSS pixels — drives the parallax. */
+  setScroll(px: number): void;
   enter(solid: number, opts?: { instant?: boolean }): void;
   leave(): void;
   skip(): void;
@@ -388,6 +390,9 @@ export function createHubScene(
   let yawVel = 0;
   let tiltVel = 0;
   let held = false;
+  // scroll parallax: the room's scroll, eased so the depth glides
+  let scrollTarget = 0;
+  let scrollEased = 0;
 
   /**
    * A DOM rect → a centre in world units and a world radius. `reach` lets
@@ -575,7 +580,10 @@ export function createHubScene(
       const visible = sol.alpha > 0.003 && sol.s > 0.002;
       sol.root.visible = visible;
       if (!visible) return;
-      sol.root.position.set(sol.x, sol.y, 0);
+      // the resting solid drifts up a little and turns as the room scrolls
+      const drift = mode === "room" && i === target ? scrollEased : 0;
+      sol.root.position.set(sol.x, sol.y + drift * 0.0009, 0);
+      sol.root.rotation.z = drift * 0.0012;
       sol.root.scale.setScalar(sol.s);
       sol.edgeMat.opacity = sol.alpha;
       sol.faceMat.opacity = sol.alpha * (0.07 + sol.glow * 0.1);
@@ -591,6 +599,14 @@ export function createHubScene(
     if (!burstFired && inSeq && s >= 0.98 && target !== null) {
       burstFired = true;
       fireBurst(solids[target]);
+    }
+
+    // scroll parallax: the starfield slides up behind the room. One shift
+    // for the whole field — perspective moves near dust further than far
+    // dust, so the layers separate by depth on their own.
+    if (!reduced) {
+      scrollEased += (scrollTarget - scrollEased) * (1 - Math.exp(-dt * 6));
+      dust.position.y = scrollEased * 0.0022;
     }
 
     // ambient dust drifts upward and wraps
@@ -665,6 +681,10 @@ export function createHubScene(
       // momentum from the latest movement (assumes ~60 events a second)
       yawVel = yawVel * 0.5 + dx * k * 60 * 0.5;
       tiltVel = tiltVel * 0.5 + dy * k * 60 * 0.5;
+      wake();
+    },
+    setScroll(px) {
+      scrollTarget = mode === "room" ? px : 0;
       wake();
     },
     grab(h) {

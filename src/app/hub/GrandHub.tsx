@@ -175,6 +175,7 @@ export function GrandHub() {
       // straight in; choosing one from the hub plays the sequence
       const instant = prev === undefined || reducedMotion() || !scene;
       scene?.enter(roomByKey(room).solid, { instant });
+      scene?.setScroll(0); // each room opens at its top
       if (!instant) sound.enter(roomByKey(room).solid);
       setPlaying(!instant);
       roomRef.current?.focus({ preventScroll: true });
@@ -184,6 +185,7 @@ export function GrandHub() {
       }
     } else {
       scene?.leave();
+      scene?.setScroll(0);
       if (prev) sound.leave();
       setPlaying(false);
       if (prev) menuRefs.current[prev]?.focus({ preventScroll: true });
@@ -332,6 +334,7 @@ export function GrandHub() {
           onPointerDown={skip}
           onWheel={skip}
           onKeyDown={skip}
+          onScroll={(e) => sceneRef.current?.setScroll(e.currentTarget.scrollTop)}
         >
           <header className="h-room-bar">
             <button type="button" className="h-back" onClick={home}>
